@@ -5,6 +5,8 @@ dist/
 *.log
 release/
 scripts/
-build/
+build/*
+!build/icon.png
+!build/icon.icns
 coverage/
 .claude/

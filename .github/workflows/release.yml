@@ -20,9 +20,6 @@ jobs:
 
       - run: npm ci
 
-      - name: Generate app icon
-        run: node scripts/generate-icon.js
-
       - name: Build & Package (macOS)
         run: npx electron-vite build && npx electron-builder --mac dmg zip
         env:
@@ -32,7 +29,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            release/${{ github.event.release.tag_name && '**' || '**' }}/*.dmg
+            release/**/*.dmg
             release/**/*.zip
 
   build-windows:
