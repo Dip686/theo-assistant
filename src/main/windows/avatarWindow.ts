@@ -5,7 +5,8 @@ let avatarWindow: BrowserWindow | null = null
 
 export function createAvatarWindow(): BrowserWindow {
   const display = screen.getPrimaryDisplay()
-  const { width: screenWidth, height: screenHeight } = display.workAreaSize
+  // Use full screen size (not workArea) so Theo covers full-screen apps too
+  const { width: screenWidth, height: screenHeight } = display.size
 
   // Avatar window covers the bottom-right area for animation
   const winWidth = 600
@@ -25,6 +26,7 @@ export function createAvatarWindow(): BrowserWindow {
     focusable: false,
     show: true,
     visibleOnAllWorkspaces: true,
+    visibleOnFullScreen: true,
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       contextIsolation: true,
