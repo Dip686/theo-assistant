@@ -5,18 +5,32 @@ let avatarWindow: BrowserWindow | null = null
 
 export function createAvatarWindow(): BrowserWindow {
   const display = screen.getPrimaryDisplay()
-  // Use full screen size (not workArea) so Theo covers full-screen apps too
-  const { width: screenWidth, height: screenHeight } = display.size
 
   // Avatar window covers the bottom-right area for animation
   const winWidth = 600
   const winHeight = 500
 
+  // On Windows, use workArea to avoid placing Theo behind the taskbar.
+  // On macOS, use full display.size so Theo covers full-screen apps
+  // (visibleOnFullScreen handles the visibility, but size ensures positioning).
+  const isWindows = process.platform === 'win32'
+  let winX: number, winY: number
+  if (isWindows) {
+    const { x, y, width, height } = display.workArea
+    winX = x + width - winWidth
+    winY = y + height - winHeight
+  } else {
+    const { width, height } = display.size
+    winX = width - winWidth
+    winY = height - winHeight
+  }
+
   avatarWindow = new BrowserWindow({
     width: winWidth,
     height: winHeight,
-    x: screenWidth - winWidth,
-    y: screenHeight - winHeight,
+    x: winX,
+    y: winY,
+    title: '', // Prevent window title tooltip on Windows
     transparent: true,
     frame: false,
     alwaysOnTop: true,
@@ -25,6 +39,8 @@ export function createAvatarWindow(): BrowserWindow {
     resizable: false,
     focusable: false,
     show: true,
+    // Explicit transparent background — fixes white flash / residual block on Windows
+    backgroundColor: '#00000000',
     visibleOnAllWorkspaces: true,
     visibleOnFullScreen: true,
     webPreferences: {
