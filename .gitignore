@@ -8,5 +8,6 @@ scripts/
 build/*
 !build/icon.png
 !build/icon.icns
+!build/icon.ico
 coverage/
 .claude/
