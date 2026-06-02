@@ -1,6 +1,6 @@
 {
   "name": "theo",
-  "version": "1.2.0",
+  "version": "2.0.3",
   "description": "Desktop avatar assistant that reminds you to take breaks",
   "author": "Dip686",
   "main": "./out/main/index.js",
