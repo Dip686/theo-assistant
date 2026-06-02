@@ -44,8 +44,13 @@ jobs:
 
       - run: npm ci
 
-      - name: Build & Package (Windows)
-        run: npx electron-vite build && npx electron-builder --win nsis zip
+      - name: Build app
+        run: npx electron-vite build
+        shell: bash
+
+      - name: Package (Windows)
+        run: npx electron-builder --win nsis zip
+        shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
