@@ -3,31 +3,44 @@ import { join } from 'path'
 
 let avatarWindow: BrowserWindow | null = null
 
+/** Window dimensions for the avatar overlay */
+export const WIN_WIDTH = 600
+export const WIN_HEIGHT = 500
+
+/**
+ * Compute the avatar window position based on platform and display info.
+ * Pure function — easy to unit test without Electron runtime.
+ */
+export function computeWindowPosition(
+  platform: string,
+  displaySize: { width: number; height: number },
+  workArea: { x: number; y: number; width: number; height: number }
+): { x: number; y: number } {
+  if (platform === 'win32') {
+    // Windows: use workArea to stay above the taskbar
+    return {
+      x: workArea.x + workArea.width - WIN_WIDTH,
+      y: workArea.y + workArea.height - WIN_HEIGHT,
+    }
+  }
+  // macOS / Linux: use full display size so window covers full-screen apps
+  return {
+    x: displaySize.width - WIN_WIDTH,
+    y: displaySize.height - WIN_HEIGHT,
+  }
+}
+
 export function createAvatarWindow(): BrowserWindow {
   const display = screen.getPrimaryDisplay()
-
-  // Avatar window covers the bottom-right area for animation
-  const winWidth = 600
-  const winHeight = 500
-
-  // On Windows, use workArea to avoid placing Theo behind the taskbar.
-  // On macOS, use full display.size so Theo covers full-screen apps
-  // (visibleOnFullScreen handles the visibility, but size ensures positioning).
-  const isWindows = process.platform === 'win32'
-  let winX: number, winY: number
-  if (isWindows) {
-    const { x, y, width, height } = display.workArea
-    winX = x + width - winWidth
-    winY = y + height - winHeight
-  } else {
-    const { width, height } = display.size
-    winX = width - winWidth
-    winY = height - winHeight
-  }
+  const { x: winX, y: winY } = computeWindowPosition(
+    process.platform,
+    display.size,
+    display.workArea
+  )
 
   avatarWindow = new BrowserWindow({
-    width: winWidth,
-    height: winHeight,
+    width: WIN_WIDTH,
+    height: WIN_HEIGHT,
     x: winX,
     y: winY,
     title: '', // Prevent window title tooltip on Windows
@@ -41,8 +54,6 @@ export function createAvatarWindow(): BrowserWindow {
     show: true,
     // Explicit transparent background — fixes white flash / residual block on Windows
     backgroundColor: '#00000000',
-    visibleOnAllWorkspaces: true,
-    visibleOnFullScreen: true,
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       contextIsolation: true,
@@ -50,7 +61,8 @@ export function createAvatarWindow(): BrowserWindow {
     },
   })
 
-  // Screen-saver level to appear over full-screen apps
+  // Explicitly set after creation — constructor options alone are unreliable on macOS
+  avatarWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true })
   avatarWindow.setAlwaysOnTop(true, 'screen-saver')
 
   // Click-through by default (idle state)
