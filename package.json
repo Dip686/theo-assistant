@@ -1,13 +1,49 @@
 {
   "name": "theo",
-  "version": "0.1.0",
+  "version": "1.2.0",
   "description": "Desktop avatar assistant that reminds you to take breaks",
+  "author": "Dip686",
   "main": "./out/main/index.js",
   "scripts": {
     "dev": "electron-vite dev",
     "build": "electron-vite build",
     "preview": "electron-vite preview",
-    "package": "electron-vite build && electron-builder"
+    "package": "electron-vite build && electron-builder --mac",
+    "package:dmg": "electron-vite build && electron-builder --mac dmg",
+    "package:zip": "electron-vite build && electron-builder --mac zip"
+  },
+  "build": {
+    "appId": "com.dip686.theo",
+    "productName": "Theo",
+    "directories": {
+      "output": "release/${version}"
+    },
+    "files": [
+      "out/**/*"
+    ],
+    "mac": {
+      "category": "public.app-category.productivity",
+      "target": ["dmg", "zip"],
+      "icon": "build/icon.icns"
+    },
+    "dmg": {
+      "title": "Theo",
+      "contents": [
+        { "x": 130, "y": 220 },
+        { "x": 410, "y": 220, "type": "link", "path": "/Applications" }
+      ]
+    },
+    "win": {
+      "target": ["nsis", "zip"],
+      "icon": "build/icon.png"
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": false,
+      "installerIcon": "build/icon.png",
+      "uninstallerIcon": "build/icon.png"
+    }
   },
   "dependencies": {
     "uuid": "^11.1.0"

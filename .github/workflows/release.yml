@@ -1,0 +1,60 @@
+name: Build & Release
+
+on:
+  release:
+    types: [created]
+
+permissions:
+  contents: write
+
+jobs:
+  build-mac:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Generate app icon
+        run: node scripts/generate-icon.js
+
+      - name: Build & Package (macOS)
+        run: npx electron-vite build && npx electron-builder --mac dmg zip
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload macOS artifacts to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            release/${{ github.event.release.tag_name && '**' || '**' }}/*.dmg
+            release/**/*.zip
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build & Package (Windows)
+        run: npx electron-vite build && npx electron-builder --win nsis zip
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Windows artifacts to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            release/**/*.exe
+            release/**/*.zip
