@@ -1,12 +1,6 @@
 import { defineConfig } from 'electron-vite'
 import { resolve } from 'path'
-import { existsSync } from 'fs'
 import react from '@vitejs/plugin-react'
-
-// Use local avatarConfig.ts if it exists, otherwise fall back to default
-const avatarConfigPath = existsSync(resolve(__dirname, 'src/renderer/sprites/avatarConfig.ts'))
-  ? resolve(__dirname, 'src/renderer/sprites/avatarConfig.ts')
-  : resolve(__dirname, 'src/renderer/sprites/avatarConfig.default.ts')
 
 export default defineConfig({
   main: {
@@ -35,11 +29,6 @@ export default defineConfig({
     },
     plugins: [react({
       jsxRuntime: 'automatic',
-    })],
-    resolve: {
-      alias: {
-        './avatarConfig': avatarConfigPath,
-      }
-    }
+    })]
   }
 })
