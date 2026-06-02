@@ -15,7 +15,7 @@ export function createPanelWindow(): BrowserWindow {
 
   panelWindow = new BrowserWindow({
     width: 340,
-    height: 520,
+    height: 600,
     x: screenWidth - 360,
     y: 60,
     resizable: false,

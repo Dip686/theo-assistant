@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Theo Bubble Spacing Options</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #2c2c3a;
+      color: #E8E8F0;
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 30px;
+    }
+    h1 { color: #4A90D9; margin-bottom: 6px; font-size: 22px; }
+    p.sub { color: #8888A0; margin-bottom: 30px; font-size: 13px; }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    .card {
+      background: #1A1A2E;
+      border: 2px solid #333350;
+      border-radius: 12px;
+      padding: 20px;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .card:hover { border-color: #4A90D9; }
+    .card.picked { border-color: #4CAF50; }
+    .label { font-size: 13px; font-weight: 600; color: #4A90D9; margin-bottom: 4px; }
+    .desc { font-size: 11px; color: #8888A0; margin-bottom: 16px; }
+    .scene {
+      position: relative;
+      height: 300px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    /* Pixel art Theo placeholder */
+    .theo {
+      width: 80px; height: 100px;
+      background: linear-gradient(180deg, #2A2A3E 0%, #C68642 20%, #C68642 45%, #4A90D9 50%, #4A90D9 75%, #3D4F6F 75%, #3D4F6F 90%, #E8E8E8 90%);
+      border-radius: 4px;
+      image-rendering: pixelated;
+    }
+    .bubble {
+      background: #2A2A3E;
+      border: 3px solid #4A90D9;
+      border-radius: 12px;
+      font-family: 'Press Start 2P', monospace, system-ui;
+      color: #e8e8f0;
+      position: absolute;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    }
+    .bubble .tail {
+      position: absolute;
+      width: 0; height: 0;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-top: 10px solid #4A90D9;
+    }
+    .actions {
+      display: flex;
+      justify-content: flex-end;
+    }
+    .btn-s { background: #3A3A5E; color: #8888A0; border: none; border-radius: 6px; cursor: pointer; }
+    .btn-o { background: #4A90D9; color: white; border: none; border-radius: 6px; cursor: pointer; }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+</head>
+<body>
+  <h1>Bubble Spacing Options</h1>
+  <p class="sub">Same design, different spacing. Click your pick.</p>
+
+  <div class="grid">
+
+    <!-- A: Current (loose) -->
+    <div class="card" onclick="pick(this)">
+      <div class="label">A. Current (Wide gap, large padding)</div>
+      <div class="desc">Bubble far from Theo. Big internal padding. Feels disconnected.</div>
+      <div class="scene">
+        <div class="bubble" style="
+          bottom: 130px;
+          padding: 16px 20px;
+          font-size: 18px;
+          line-height: 1.6;
+          max-width: 340px;
+        ">
+          Wink wink! Just checking in. 👀
+          <div class="actions" style="margin-top: 12px; gap: 10px;">
+            <button class="btn-s" style="font-size: 14px; padding: 8px 16px; font-family: 'Press Start 2P', monospace;">Snooze</button>
+            <button class="btn-o" style="font-size: 14px; padding: 8px 16px; font-family: 'Press Start 2P', monospace;">OK</button>
+          </div>
+          <div class="tail" style="bottom: -12px; right: 40px;"></div>
+        </div>
+        <div class="theo"></div>
+      </div>
+    </div>
+
+    <!-- B: Tight gap, compact padding -->
+    <div class="card" onclick="pick(this)">
+      <div class="label">B. Snug (Tight gap, compact padding)</div>
+      <div class="desc">Bubble sits right on Theo's head. Compact padding. Connected feel.</div>
+      <div class="scene">
+        <div class="bubble" style="
+          bottom: 108px;
+          padding: 10px 14px;
+          font-size: 14px;
+          line-height: 1.7;
+          max-width: 280px;
+        ">
+          Wink wink! Just checking in. 👀
+          <div class="actions" style="margin-top: 8px; gap: 8px;">
+            <button class="btn-s" style="font-size: 11px; padding: 5px 12px; font-family: 'Press Start 2P', monospace;">Snooze</button>
+            <button class="btn-o" style="font-size: 11px; padding: 5px 12px; font-family: 'Press Start 2P', monospace;">OK</button>
+          </div>
+          <div class="tail" style="bottom: -10px; right: 35px;"></div>
+        </div>
+        <div class="theo"></div>
+      </div>
+    </div>
+
+    <!-- C: Medium gap, system font -->
+    <div class="card" onclick="pick(this)">
+      <div class="label">C. System font + medium gap</div>
+      <div class="desc">System font is more readable. Medium gap. Balanced.</div>
+      <div class="scene">
+        <div class="bubble" style="
+          bottom: 115px;
+          padding: 14px 18px;
+          font-size: 14px;
+          font-family: system-ui, -apple-system, sans-serif;
+          line-height: 1.5;
+          max-width: 260px;
+        ">
+          Wink wink! Just checking in. 👀
+          <div class="actions" style="margin-top: 10px; gap: 8px;">
+            <button class="btn-s" style="font-size: 12px; padding: 6px 14px; font-family: system-ui;">Snooze</button>
+            <button class="btn-o" style="font-size: 12px; padding: 6px 14px; font-family: system-ui;">OK</button>
+          </div>
+          <div class="tail" style="bottom: -10px; right: 35px;"></div>
+        </div>
+        <div class="theo"></div>
+      </div>
+    </div>
+
+    <!-- D: Tight gap, pixel font small, wider bubble -->
+    <div class="card" onclick="pick(this)">
+      <div class="label">D. Tight + small pixel font + wide</div>
+      <div class="desc">Bubble hugs Theo. Smaller retro font. Single-line message when short.</div>
+      <div class="scene">
+        <div class="bubble" style="
+          bottom: 108px;
+          padding: 12px 16px;
+          font-size: 11px;
+          line-height: 1.8;
+          max-width: 320px;
+        ">
+          Wink wink! Just checking in. 👀
+          <div class="actions" style="margin-top: 8px; gap: 6px;">
+            <button class="btn-s" style="font-size: 9px; padding: 5px 10px; font-family: 'Press Start 2P', monospace;">Snooze</button>
+            <button class="btn-o" style="font-size: 9px; padding: 5px 10px; font-family: 'Press Start 2P', monospace;">OK</button>
+          </div>
+          <div class="tail" style="bottom: -10px; right: 35px;"></div>
+        </div>
+        <div class="theo"></div>
+      </div>
+    </div>
+
+    <!-- E: Overlapping bubble -->
+    <div class="card" onclick="pick(this)">
+      <div class="label">E. Overlapping (bubble touches avatar)</div>
+      <div class="desc">No visible gap. Tail overlaps Theo slightly. Feels like a comic strip.</div>
+      <div class="scene">
+        <div class="bubble" style="
+          bottom: 96px;
+          padding: 12px 16px;
+          font-size: 14px;
+          line-height: 1.7;
+          max-width: 280px;
+          z-index: 2;
+        ">
+          Wink wink! Just checking in. 👀
+          <div class="actions" style="margin-top: 8px; gap: 8px;">
+            <button class="btn-s" style="font-size: 11px; padding: 5px 12px; font-family: 'Press Start 2P', monospace;">Snooze</button>
+            <button class="btn-o" style="font-size: 11px; padding: 5px 12px; font-family: 'Press Start 2P', monospace;">OK</button>
+          </div>
+          <div class="tail" style="bottom: -10px; right: 35px;"></div>
+        </div>
+        <div class="theo"></div>
+      </div>
+    </div>
+
+    <!-- F: Medium gap, balanced everything -->
+    <div class="card" onclick="pick(this)">
+      <div class="label">F. Balanced (recommended)</div>
+      <div class="desc">Small gap from head. Medium padding. 14px pixel font. Buttons not too big.</div>
+      <div class="scene">
+        <div class="bubble" style="
+          bottom: 112px;
+          padding: 12px 16px;
+          font-size: 14px;
+          line-height: 1.7;
+          max-width: 290px;
+        ">
+          Wink wink! Just checking in. 👀
+          <div class="actions" style="margin-top: 10px; gap: 8px;">
+            <button class="btn-s" style="font-size: 11px; padding: 6px 12px; font-family: 'Press Start 2P', monospace;">Snooze</button>
+            <button class="btn-o" style="font-size: 11px; padding: 6px 12px; font-family: 'Press Start 2P', monospace;">OK</button>
+          </div>
+          <div class="tail" style="bottom: -10px; right: 35px;"></div>
+        </div>
+        <div class="theo"></div>
+      </div>
+    </div>
+
+  </div>
+
+<script>
+function pick(el) {
+  document.querySelectorAll('.card').forEach(c => c.classList.remove('picked'));
+  el.classList.add('picked');
+}
+</script>
+</body>
+</html>

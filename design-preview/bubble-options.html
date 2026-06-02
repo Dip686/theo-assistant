@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Theo Speech Bubble Options</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #2c2c3a;
+      color: #E8E8F0;
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 30px;
+    }
+    h1 { color: #4A90D9; margin-bottom: 6px; font-size: 22px; }
+    p.sub { color: #8888A0; margin-bottom: 30px; font-size: 13px; }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    .card {
+      background: #1A1A2E;
+      border: 2px solid #333350;
+      border-radius: 12px;
+      padding: 20px;
+      cursor: pointer;
+      transition: border-color 0.2s;
+      position: relative;
+    }
+    .card:hover { border-color: #4A90D9; }
+    .card.picked { border-color: #4CAF50; }
+    .label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #4A90D9;
+      margin-bottom: 4px;
+    }
+    .desc {
+      font-size: 11px;
+      color: #8888A0;
+      margin-bottom: 16px;
+    }
+    /* Scene area */
+    .scene {
+      position: relative;
+      height: 260px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    .avatar-placeholder {
+      width: 80px;
+      height: 100px;
+      background: linear-gradient(180deg, #2A2A3E 0%, #C68642 20%, #C68642 45%, #4A90D9 50%, #4A90D9 75%, #3D4F6F 75%, #3D4F6F 90%, #E8E8E8 90%);
+      border-radius: 4px;
+      image-rendering: pixelated;
+      position: relative;
+    }
+
+    /* ===== BUBBLE STYLES ===== */
+
+    /* Option A: Current - Dark card with blue border */
+    .bubble-a {
+      background: #2A2A3E;
+      border: 3px solid #4A90D9;
+      border-radius: 12px;
+      padding: 16px 20px;
+      font-family: 'Press Start 2P', monospace, system-ui;
+      font-size: 14px;
+      line-height: 1.8;
+      color: #e8e8f0;
+      max-width: 280px;
+      position: absolute;
+      bottom: 110px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    }
+    .bubble-a .tail {
+      position: absolute;
+      bottom: -12px;
+      right: 40px;
+      width: 0; height: 0;
+      border-left: 12px solid transparent;
+      border-right: 12px solid transparent;
+      border-top: 12px solid #4A90D9;
+    }
+
+    /* Option B: Rounded white with soft shadow */
+    .bubble-b {
+      background: #FFFFFF;
+      border: none;
+      border-radius: 20px;
+      padding: 16px 22px;
+      font-family: system-ui, -apple-system, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #1A1A2E;
+      max-width: 260px;
+      position: absolute;
+      bottom: 110px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+    }
+    .bubble-b .tail {
+      position: absolute;
+      bottom: -10px;
+      right: 35px;
+      width: 0; height: 0;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-top: 10px solid #FFFFFF;
+    }
+
+    /* Option C: Pixel art frame with 8-bit look */
+    .bubble-c {
+      background: #1E1E2E;
+      border: 4px solid #E8E8F0;
+      border-radius: 2px;
+      padding: 14px 18px;
+      font-family: 'Press Start 2P', monospace, system-ui;
+      font-size: 12px;
+      line-height: 2;
+      color: #E8E8F0;
+      max-width: 270px;
+      position: absolute;
+      bottom: 110px;
+      box-shadow: 6px 6px 0 rgba(0,0,0,0.4);
+      image-rendering: pixelated;
+    }
+    .bubble-c .tail {
+      position: absolute;
+      bottom: -14px;
+      right: 30px;
+      width: 14px; height: 14px;
+      background: #E8E8F0;
+      clip-path: polygon(0 0, 100% 0, 50% 100%);
+    }
+
+    /* Option D: Glassmorphism / frosted */
+    .bubble-d {
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 16px;
+      padding: 16px 22px;
+      font-family: system-ui, -apple-system, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #F0F0FF;
+      max-width: 260px;
+      position: absolute;
+      bottom: 110px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    }
+    .bubble-d .tail {
+      position: absolute;
+      bottom: -10px;
+      right: 35px;
+      width: 0; height: 0;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-top: 10px solid rgba(255,255,255,0.12);
+    }
+
+    /* Option E: Warm gradient with round shape */
+    .bubble-e {
+      background: linear-gradient(135deg, #2A2A3E 0%, #3A2A4E 100%);
+      border: 2px solid #7C5CBF;
+      border-radius: 20px;
+      padding: 16px 22px;
+      font-family: system-ui, -apple-system, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #E8E8F0;
+      max-width: 260px;
+      position: absolute;
+      bottom: 110px;
+      box-shadow: 0 6px 24px rgba(124,92,191,0.2);
+    }
+    .bubble-e .tail {
+      position: absolute;
+      bottom: -10px;
+      right: 35px;
+      width: 0; height: 0;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-top: 10px solid #7C5CBF;
+    }
+
+    /* Option F: Minimal dark with accent line */
+    .bubble-f {
+      background: #222238;
+      border: none;
+      border-left: 4px solid #4A90D9;
+      border-radius: 4px 12px 12px 4px;
+      padding: 16px 20px;
+      font-family: system-ui, -apple-system, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #E8E8F0;
+      max-width: 260px;
+      position: absolute;
+      bottom: 110px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+    }
+    .bubble-f .tail {
+      position: absolute;
+      bottom: -10px;
+      right: 35px;
+      width: 0; height: 0;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-top: 10px solid #222238;
+    }
+
+    /* Buttons inside bubbles */
+    .bubble-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      margin-top: 12px;
+    }
+    .btn-snooze, .btn-ok {
+      font-size: 12px;
+      padding: 6px 14px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    /* Dark bubble button variants */
+    .dark .btn-snooze { background: #3A3A5E; color: #8888A0; }
+    .dark .btn-ok { background: #4A90D9; color: white; }
+
+    /* Light bubble button variants */
+    .light .btn-snooze { background: #E8E8F0; color: #666; }
+    .light .btn-ok { background: #4A90D9; color: white; }
+
+    /* Pixel bubble button variants */
+    .pixel .btn-snooze { background: #3A3A5E; color: #8888A0; border-radius: 2px; font-family: 'Press Start 2P', monospace; font-size: 9px; }
+    .pixel .btn-ok { background: #4A90D9; color: white; border-radius: 2px; font-family: 'Press Start 2P', monospace; font-size: 9px; }
+
+    /* Glass bubble button variants */
+    .glass .btn-snooze { background: rgba(255,255,255,0.08); color: #aaa; border: 1px solid rgba(255,255,255,0.1); }
+    .glass .btn-ok { background: rgba(74,144,217,0.7); color: white; border: 1px solid rgba(74,144,217,0.4); }
+
+    /* Purple bubble button variants */
+    .purple .btn-snooze { background: #3A2A4E; color: #9988BB; }
+    .purple .btn-ok { background: #7C5CBF; color: white; }
+
+    /* Accent bubble button variants */
+    .accent .btn-snooze { background: #2A2A42; color: #8888A0; }
+    .accent .btn-ok { background: #4A90D9; color: white; }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+</head>
+<body>
+  <h1>Speech Bubble Designs</h1>
+  <p class="sub">Click to select your favorite. Each pairs with Theo's pixel art style differently.</p>
+
+  <div class="grid">
+    <!-- A: Current -->
+    <div class="card" onclick="pick(this)">
+      <div class="label">A. Dark Card + Blue Border (Current)</div>
+      <div class="desc">Retro game dialog box feel. Matches pixel art with Press Start 2P font.</div>
+      <div class="scene">
+        <div class="bubble-a dark">
+          Wink wink! Just checking in. 👀
+          <div class="bubble-actions">
+            <button class="btn-snooze">Snooze</button>
+            <button class="btn-ok">OK</button>
+          </div>
+          <div class="tail"></div>
+        </div>
+        <div class="avatar-placeholder"></div>
+      </div>
+    </div>
+
+    <!-- B: White rounded -->
+    <div class="card" onclick="pick(this)">
+      <div class="label">B. Clean White Bubble</div>
+      <div class="desc">Modern, high contrast against dark backgrounds. Instantly readable.</div>
+      <div class="scene">
+        <div class="bubble-b light">
+          Wink wink! Just checking in. 👀
+          <div class="bubble-actions">
+            <button class="btn-snooze">Snooze</button>
+            <button class="btn-ok">OK</button>
+          </div>
+          <div class="tail"></div>
+        </div>
+        <div class="avatar-placeholder"></div>
+      </div>
+    </div>
+
+    <!-- C: Pixel frame -->
+    <div class="card" onclick="pick(this)">
+      <div class="label">C. Pixel Art Frame</div>
+      <div class="desc">Hard edges, drop shadow, chunky border. Full retro RPG dialog box.</div>
+      <div class="scene">
+        <div class="bubble-c pixel">
+          Wink wink! Just checking in. 👀
+          <div class="bubble-actions">
+            <button class="btn-snooze">Snooze</button>
+            <button class="btn-ok">OK</button>
+          </div>
+          <div class="tail"></div>
+        </div>
+        <div class="avatar-placeholder"></div>
+      </div>
+    </div>
+
+    <!-- D: Glass -->
+    <div class="card" onclick="pick(this)">
+      <div class="label">D. Frosted Glass</div>
+      <div class="desc">Translucent with blur. Blends with any wallpaper. macOS native feel.</div>
+      <div class="scene">
+        <div class="bubble-d glass">
+          Wink wink! Just checking in. 👀
+          <div class="bubble-actions">
+            <button class="btn-snooze">Snooze</button>
+            <button class="btn-ok">OK</button>
+          </div>
+          <div class="tail"></div>
+        </div>
+        <div class="avatar-placeholder"></div>
+      </div>
+    </div>
+
+    <!-- E: Purple gradient -->
+    <div class="card" onclick="pick(this)">
+      <div class="label">E. Purple Gradient</div>
+      <div class="desc">Warm gradient with purple accent. Cozy, distinctive personality.</div>
+      <div class="scene">
+        <div class="bubble-e purple">
+          Wink wink! Just checking in. 👀
+          <div class="bubble-actions">
+            <button class="btn-snooze">Snooze</button>
+            <button class="btn-ok">OK</button>
+          </div>
+          <div class="tail"></div>
+        </div>
+        <div class="avatar-placeholder"></div>
+      </div>
+    </div>
+
+    <!-- F: Minimal accent -->
+    <div class="card" onclick="pick(this)">
+      <div class="label">F. Minimal + Accent Line</div>
+      <div class="desc">Clean dark card with a left blue accent bar. Subtle, professional.</div>
+      <div class="scene">
+        <div class="bubble-f accent">
+          Wink wink! Just checking in. 👀
+          <div class="bubble-actions">
+            <button class="btn-snooze">Snooze</button>
+            <button class="btn-ok">OK</button>
+          </div>
+          <div class="tail"></div>
+        </div>
+        <div class="avatar-placeholder"></div>
+      </div>
+    </div>
+  </div>
+
+<script>
+function pick(el) {
+  document.querySelectorAll('.card').forEach(c => c.classList.remove('picked'));
+  el.classList.add('picked');
+}
+</script>
+</body>
+</html>

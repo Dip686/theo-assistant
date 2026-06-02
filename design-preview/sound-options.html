@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Theo Sound Options</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #1A1A2E;
+      color: #E8E8F0;
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 40px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    h1 { color: #4A90D9; margin-bottom: 8px; font-size: 24px; }
+    p.sub { color: #8888A0; margin-bottom: 30px; font-size: 14px; }
+    .option {
+      background: #222238;
+      border: 2px solid #333350;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .option:hover { border-color: #4A90D9; background: #2A2A42; }
+    .option.active { border-color: #4CAF50; background: #1e2e1e; }
+    .play-btn {
+      width: 50px; height: 50px;
+      border-radius: 50%;
+      background: #4A90D9;
+      border: none;
+      color: white;
+      font-size: 20px;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: transform 0.1s;
+    }
+    .play-btn:active { transform: scale(0.9); }
+    .info { flex: 1; }
+    .name { font-weight: 600; font-size: 16px; margin-bottom: 4px; }
+    .desc { color: #8888A0; font-size: 13px; }
+    .tag {
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 10px;
+      background: #333350;
+      color: #8888A0;
+      display: inline-block;
+      margin-top: 6px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Theo Notification Sounds</h1>
+  <p class="sub">Click each to preview. Pick the one that feels right.</p>
+
+  <div class="option" onclick="play('winkWink', this)">
+    <button class="play-btn">&#9654;</button>
+    <div class="info">
+      <div class="name">1. Wink Wink (Current)</div>
+      <div class="desc">Two quick rising sine tones. Cheerful, minimal.</div>
+      <span class="tag">C6 &rarr; E6</span>
+    </div>
+  </div>
+
+  <div class="option" onclick="play('bubblePop', this)">
+    <button class="play-btn">&#9654;</button>
+    <div class="info">
+      <div class="name">2. Bubble Pop</div>
+      <div class="desc">Soft bubbly pop with a pitch drop. Playful, like a game notification.</div>
+      <span class="tag">frequency sweep</span>
+    </div>
+  </div>
+
+  <div class="option" onclick="play('gentleChime', this)">
+    <button class="play-btn">&#9654;</button>
+    <div class="info">
+      <div class="name">3. Gentle Chime</div>
+      <div class="desc">Three-note ascending chime. Warm and musical, like a wind chime.</div>
+      <span class="tag">C5 &rarr; E5 &rarr; G5</span>
+    </div>
+  </div>
+
+  <div class="option" onclick="play('pixelCoin', this)">
+    <button class="play-btn">&#9654;</button>
+    <div class="info">
+      <div class="name">4. Pixel Coin</div>
+      <div class="desc">Classic retro coin-collect sound. 8-bit, nostalgic, matches pixel art style.</div>
+      <span class="tag">square wave</span>
+    </div>
+  </div>
+
+  <div class="option" onclick="play('softDing', this)">
+    <button class="play-btn">&#9654;</button>
+    <div class="info">
+      <div class="name">5. Soft Ding</div>
+      <div class="desc">Single gentle bell ding with reverb tail. Calm, non-intrusive.</div>
+      <span class="tag">bell tone</span>
+    </div>
+  </div>
+
+  <div class="option" onclick="play('dootDoot', this)">
+    <button class="play-btn">&#9654;</button>
+    <div class="info">
+      <div class="name">6. Doot Doot</div>
+      <div class="desc">Two playful triangle-wave toots. Cute, like a tiny horn.</div>
+      <span class="tag">triangle wave</span>
+    </div>
+  </div>
+
+  <div class="option" onclick="play('magicSparkle', this)">
+    <button class="play-btn">&#9654;</button>
+    <div class="info">
+      <div class="name">7. Magic Sparkle</div>
+      <div class="desc">Quick ascending arpeggio with shimmer. Feels magical and delightful.</div>
+      <span class="tag">4-note arpeggio</span>
+    </div>
+  </div>
+
+  <div class="option" onclick="play('knockKnock', this)">
+    <button class="play-btn">&#9654;</button>
+    <div class="info">
+      <div class="name">8. Knock Knock</div>
+      <div class="desc">Two soft wooden knocks. Subtle, like someone tapping your shoulder.</div>
+      <span class="tag">noise burst</span>
+    </div>
+  </div>
+
+<script>
+const ctx = new AudioContext();
+
+function tone(freq, start, dur, vol, type = 'sine', pitchEnd = null) {
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = type;
+  osc.frequency.setValueAtTime(freq, start);
+  if (pitchEnd) osc.frequency.linearRampToValueAtTime(pitchEnd, start + dur);
+  gain.gain.setValueAtTime(0, start);
+  gain.gain.linearRampToValueAtTime(vol, start + 0.005);
+  gain.gain.setValueAtTime(vol, start + dur * 0.5);
+  gain.gain.linearRampToValueAtTime(0, start + dur);
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.start(start);
+  osc.stop(start + dur);
+}
+
+function noise(start, dur, vol) {
+  const bufSize = ctx.sampleRate * dur;
+  const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+  const data = buf.getChannelData(0);
+  for (let i = 0; i < bufSize; i++) data[i] = (Math.random() * 2 - 1);
+  const src = ctx.createBufferSource();
+  src.buffer = buf;
+  const gain = ctx.createGain();
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'bandpass';
+  filter.frequency.value = 800;
+  filter.Q.value = 2;
+  gain.gain.setValueAtTime(vol, start);
+  gain.gain.linearRampToValueAtTime(0, start + dur);
+  src.connect(filter);
+  filter.connect(gain);
+  gain.connect(ctx.destination);
+  src.start(start);
+  src.stop(start + dur);
+}
+
+const sounds = {
+  winkWink() {
+    const t = ctx.currentTime;
+    tone(1047, t, 0.08, 0.15);          // C6
+    tone(1319, t + 0.12, 0.08, 0.15);   // E6
+  },
+
+  bubblePop() {
+    const t = ctx.currentTime;
+    // Rising bubble
+    tone(400, t, 0.12, 0.12, 'sine', 1200);
+    // Pop
+    tone(1400, t + 0.10, 0.06, 0.1, 'sine', 800);
+  },
+
+  gentleChime() {
+    const t = ctx.currentTime;
+    tone(523, t, 0.2, 0.1);            // C5
+    tone(659, t + 0.15, 0.2, 0.1);     // E5
+    tone(784, t + 0.30, 0.3, 0.12);    // G5
+  },
+
+  pixelCoin() {
+    const t = ctx.currentTime;
+    tone(988, t, 0.06, 0.1, 'square');       // B5
+    tone(1319, t + 0.06, 0.15, 0.08, 'square'); // E6
+  },
+
+  softDing() {
+    const t = ctx.currentTime;
+    // Fundamental
+    tone(880, t, 0.5, 0.1);    // A5
+    // Harmonic
+    tone(1760, t, 0.3, 0.04);  // A6 (octave)
+    tone(2640, t, 0.15, 0.02); // shimmer
+  },
+
+  dootDoot() {
+    const t = ctx.currentTime;
+    tone(587, t, 0.1, 0.12, 'triangle');       // D5
+    tone(784, t + 0.15, 0.12, 0.12, 'triangle'); // G5
+  },
+
+  magicSparkle() {
+    const t = ctx.currentTime;
+    tone(784, t, 0.08, 0.08);             // G5
+    tone(988, t + 0.07, 0.08, 0.08);      // B5
+    tone(1175, t + 0.14, 0.08, 0.08);     // D6
+    tone(1568, t + 0.21, 0.2, 0.1);       // G6
+  },
+
+  knockKnock() {
+    const t = ctx.currentTime;
+    noise(t, 0.04, 0.15);
+    noise(t + 0.12, 0.04, 0.15);
+  },
+};
+
+function play(name, el) {
+  if (ctx.state === 'suspended') ctx.resume();
+  sounds[name]();
+
+  // Highlight
+  document.querySelectorAll('.option').forEach(o => o.classList.remove('active'));
+  el.classList.add('active');
+}
+</script>
+</body>
+</html>

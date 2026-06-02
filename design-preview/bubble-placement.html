@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Theo Bubble Placement Tuner</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #2c2c3a;
+      color: #E8E8F0;
+      font-family: system-ui, -apple-system, sans-serif;
+      height: 100vh;
+      display: flex;
+    }
+    /* Left: Live preview mimicking the actual electron window */
+    .preview {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      border-right: 1px solid #333;
+    }
+    .preview-label {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-size: 11px;
+      color: #666;
+    }
+    /* Right: Controls */
+    .controls {
+      width: 320px;
+      padding: 20px;
+      overflow-y: auto;
+      background: #1A1A2E;
+    }
+    .controls h2 { font-size: 16px; color: #4A90D9; margin-bottom: 16px; }
+    .control-group {
+      margin-bottom: 16px;
+      background: #222238;
+      padding: 12px;
+      border-radius: 8px;
+    }
+    .control-group label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: #aaa;
+      margin-bottom: 6px;
+    }
+    .control-group label span { color: #4A90D9; font-weight: 600; }
+    input[type="range"] {
+      width: 100%;
+      accent-color: #4A90D9;
+    }
+    .section-title {
+      font-size: 11px;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+    .code-output {
+      background: #111;
+      padding: 12px;
+      border-radius: 6px;
+      font-family: monospace;
+      font-size: 11px;
+      color: #4CAF50;
+      white-space: pre;
+      margin-top: 16px;
+      line-height: 1.6;
+    }
+    .reset-btn {
+      background: #333350;
+      color: #aaa;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 4px;
+      font-size: 11px;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+
+    /* ===== Theo Canvas ===== */
+    #theoCanvas {
+      position: absolute;
+      image-rendering: pixelated;
+    }
+
+    /* ===== Speech Bubble ===== */
+    #bubble {
+      position: absolute;
+      background: #2A2A3E;
+      border: 3px solid #4A90D9;
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-family: 'Press Start 2P', monospace, system-ui;
+      font-size: 14px;
+      line-height: 1.7;
+      color: #e8e8f0;
+      max-width: 290px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+      z-index: 2;
+    }
+    #bubble .tail {
+      position: absolute;
+      bottom: -10px;
+      right: 30px;
+      width: 0; height: 0;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-top: 10px solid #4A90D9;
+    }
+    #bubble .actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      margin-top: 10px;
+    }
+    #bubble .btn-s {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 11px;
+      padding: 6px 12px;
+      background: #3A3A5E;
+      color: #8888A0;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    #bubble .btn-o {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 11px;
+      padding: 6px 12px;
+      background: #4A90D9;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    /* Guide lines */
+    .guide-bottom {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      border-top: 1px dashed rgba(255,100,100,0.3);
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview" id="preview">
+  <div class="preview-label">Live Preview (simulates bottom-right of screen)</div>
+  <div class="guide-bottom"></div>
+
+  <div id="bubble">
+    Wink wink! Just checking in. 👀
+    <div class="actions">
+      <button class="btn-s">Snooze</button>
+      <button class="btn-o">OK</button>
+    </div>
+    <div class="tail"></div>
+  </div>
+
+  <canvas id="theoCanvas" width="192" height="192"></canvas>
+</div>
+
+<div class="controls">
+  <h2>Placement Tuner</h2>
+
+  <div class="section-title">Theo Position</div>
+  <div class="control-group">
+    <label>Canvas bottom offset <span id="v_canvasBottom">-36</span>px</label>
+    <input type="range" id="canvasBottom" min="-100" max="20" value="-36">
+
+    <label>Canvas right offset <span id="v_canvasRight">40</span>px</label>
+    <input type="range" id="canvasRight" min="0" max="200" value="40">
+  </div>
+
+  <div class="section-title">Bubble Position</div>
+  <div class="control-group">
+    <label>Bubble gap above head <span id="v_bubbleGap">8</span>px</label>
+    <input type="range" id="bubbleGap" min="-20" max="60" value="8">
+
+    <label>Bubble right shift <span id="v_bubbleRight">-40</span>px</label>
+    <input type="range" id="bubbleRight" min="-200" max="100" value="-40">
+  </div>
+
+  <div class="section-title">Bubble Style</div>
+  <div class="control-group">
+    <label>Font size <span id="v_fontSize">14</span>px</label>
+    <input type="range" id="fontSize" min="9" max="22" value="14">
+
+    <label>Padding <span id="v_padding">12</span>px</label>
+    <input type="range" id="padding" min="6" max="24" value="12">
+
+    <label>Max width <span id="v_maxWidth">290</span>px</label>
+    <input type="range" id="maxWidth" min="180" max="400" value="290">
+
+    <label>Border radius <span id="v_borderRadius">12</span>px</label>
+    <input type="range" id="borderRadius" min="0" max="24" value="12">
+  </div>
+
+  <div class="section-title">Button Style</div>
+  <div class="control-group">
+    <label>Button font size <span id="v_btnSize">11</span>px</label>
+    <input type="range" id="btnSize" min="7" max="16" value="11">
+
+    <label>Button padding V <span id="v_btnPadV">6</span>px</label>
+    <input type="range" id="btnPadV" min="3" max="12" value="6">
+
+    <label>Button padding H <span id="v_btnPadH">12</span>px</label>
+    <input type="range" id="btnPadH" min="6" max="24" value="12">
+  </div>
+
+  <button class="reset-btn" onclick="resetDefaults()">Reset to defaults</button>
+
+  <div class="code-output" id="codeOutput"></div>
+</div>
+
+<script>
+// ===== Draw Theo on canvas =====
+const canvas = document.getElementById('theoCanvas');
+const ctx = canvas.getContext('2d');
+const S = 3;
+
+const SKIN = '#C68642', SKIN_SHADOW = '#A0622E', SKIN_HI = '#DBA05A';
+const HAIR = '#2A2A3E', HAIR_HI = '#4A4A6E';
+const EYE_WHITE = '#FFFFFF', EYE_PUPIL = '#1A1A2E';
+const MOUTH = '#C1553A';
+const SHIRT = '#4A90D9';
+const JEANS = '#3D4F6F', JEANS_SHADOW = '#2D3F5F';
+const SHOE = '#E8E8E8', SHOE_SHADOW = '#CCCCCC';
+
+function px(x, y, c) { ctx.fillStyle = c; ctx.fillRect(x*S, y*S, S, S); }
+function rect(x, y, w, h, c) { ctx.fillStyle = c; ctx.fillRect(x*S, y*S, w*S, h*S); }
+function shdw(c) {
+  const r = Math.max(0, parseInt(c.slice(1,3),16)-30);
+  const g = Math.max(0, parseInt(c.slice(3,5),16)-30);
+  const b = Math.max(0, parseInt(c.slice(5,7),16)-30);
+  return `rgb(${r},${g},${b})`;
+}
+
+function drawTheo() {
+  ctx.clearRect(0, 0, 192, 192);
+  const sh = shdw(SHIRT);
+
+  // Hair
+  for (let x=25;x<=38;x++) px(x,14,HAIR);
+  for (let x=24;x<=39;x++) px(x,15,HAIR);
+  for (let x=23;x<=40;x++){px(x,16,HAIR);px(x,17,HAIR);px(x,18,HAIR);}
+  [[26,12],[27,11],[28,12],[30,12],[31,11],[32,12],[34,12],[35,11],[36,12],[25,13],[29,13],[33,13],[37,13],[38,13]].forEach(([x,y])=>px(x,y,HAIR));
+  [[27,11],[32,12],[35,11]].forEach(([x,y])=>px(x,y,HAIR_HI));
+  [[27,15],[28,15],[35,15]].forEach(([x,y])=>px(x,y,HAIR_HI));
+  for(let y=19;y<=21;y++){px(22,y,HAIR_HI);px(41,y,HAIR_HI);}
+
+  // Face
+  for(let y=19;y<=27;y++) for(let x=23;x<=40;x++) px(x,y,SKIN);
+  px(22,22,SKIN);px(22,23,SKIN_SHADOW);px(41,22,SKIN);px(41,23,SKIN_SHADOW);
+  for(let x=24;x<=39;x++) px(x,27,SKIN_SHADOW);
+  for(let x=26;x<=37;x++) px(x,28,SKIN_SHADOW);
+  px(25,24,SKIN_HI);px(38,24,SKIN_HI);
+
+  // Eyes
+  rect(26,21,4,3,EYE_WHITE);px(27,22,EYE_PUPIL);px(28,22,EYE_PUPIL);px(28,21,EYE_PUPIL);
+  rect(33,21,4,3,EYE_WHITE);px(34,22,EYE_PUPIL);px(35,22,EYE_PUPIL);px(35,21,EYE_PUPIL);
+  px(29,21,'#FFF');px(36,21,'#FFF');
+  rect(25,19,5,1,HAIR);px(24,20,HAIR);rect(33,19,5,1,HAIR);px(38,20,HAIR);
+
+  // Nose & mouth
+  px(31,24,SKIN_SHADOW);px(32,24,SKIN_SHADOW);
+  for(let x=29;x<=33;x++) px(x,26,MOUTH);
+  px(28,25,MOUTH);px(34,25,MOUTH);
+
+  // Neck
+  rect(30,28,4,2,SKIN);
+
+  // Shirt
+  for(let y=30;y<=38;y++) for(let x=24;x<=39;x++) px(x,y,SHIRT);
+  for(let y=33;y<=37;y++){px(30,y,sh);px(33,y,sh);}
+  px(29,30,sh);px(30,30,sh);px(33,30,sh);px(34,30,sh);
+  for(let y=30;y<=33;y++){px(22,y,SHIRT);px(23,y,SHIRT);px(40,y,SHIRT);px(41,y,SHIRT);}
+
+  // Arms
+  for(let y=34;y<=39;y++){px(22,y,SKIN);px(23,y,SKIN);px(40,y,SKIN);px(41,y,SKIN);}
+  px(22,40,SKIN_HI);px(23,40,SKIN_HI);px(40,40,SKIN_HI);px(41,40,SKIN_HI);
+
+  // Jeans
+  for(let y=39;y<=48;y++) for(let x=25;x<=38;x++) px(x,y,JEANS);
+  for(let y=42;y<=48;y++){px(31,y,JEANS_SHADOW);px(32,y,JEANS_SHADOW);}
+  for(let y=39;y<=48;y++){px(25,y,JEANS_SHADOW);px(38,y,JEANS_SHADOW);}
+
+  // Shoes
+  for(let x=24;x<=30;x++){px(x,49,SHOE);px(x,50,SHOE_SHADOW);}
+  for(let x=33;x<=39;x++){px(x,49,SHOE);px(x,50,SHOE_SHADOW);}
+
+  // Outline
+  addOutline();
+}
+
+function addOutline() {
+  const w = 192, h = 192;
+  const imgData = ctx.getImageData(0,0,w,h);
+  const d = imgData.data;
+  const outline = [];
+  for (let y=0;y<h;y++) for(let x=0;x<w;x++) {
+    const i=(y*w+x)*4;
+    if(d[i+3]>0) continue;
+    const neighbors=[[x-1,y],[x+1,y],[x,y-1],[x,y+1]];
+    for(const[nx,ny] of neighbors){
+      if(nx>=0&&nx<w&&ny>=0&&ny<h){
+        const ni=(ny*w+nx)*4;
+        if(d[ni+3]>0){outline.push([x,y]);break;}
+      }
+    }
+  }
+  ctx.fillStyle='rgba(10,10,20,0.8)';
+  for(const[x,y] of outline) ctx.fillRect(x,y,1,1);
+}
+
+drawTheo();
+
+// ===== Sliders =====
+const sliders = ['canvasBottom','canvasRight','bubbleGap','bubbleRight','fontSize','padding','maxWidth','borderRadius','btnSize','btnPadV','btnPadH'];
+const defaults = { canvasBottom:-36, canvasRight:40, bubbleGap:8, bubbleRight:-40, fontSize:14, padding:12, maxWidth:290, borderRadius:12, btnSize:11, btnPadV:6, btnPadH:12 };
+
+function getVal(id) { return parseInt(document.getElementById(id).value); }
+
+function update() {
+  const canvasBottom = getVal('canvasBottom');
+  const canvasRight = getVal('canvasRight');
+  const bubbleGap = getVal('bubbleGap');
+  const bubbleRight = getVal('bubbleRight');
+  const fontSize = getVal('fontSize');
+  const padding = getVal('padding');
+  const maxWidth = getVal('maxWidth');
+  const borderRadius = getVal('borderRadius');
+  const btnSize = getVal('btnSize');
+  const btnPadV = getVal('btnPadV');
+  const btnPadH = getVal('btnPadH');
+
+  // Update value displays
+  sliders.forEach(id => {
+    document.getElementById('v_'+id).textContent = getVal(id);
+  });
+
+  // Position canvas
+  canvas.style.bottom = canvasBottom + 'px';
+  canvas.style.right = canvasRight + 'px';
+
+  // Theo's head top from window bottom:
+  // canvas bottom edge is at canvasBottom px
+  // hair starts at y=11 on 64-grid → 11*3 = 33px from canvas top
+  // head top from bottom = (192 + canvasBottom) - 33
+  const headTop = (192 + canvasBottom) - 33;
+  const bubbleBottom = headTop + bubbleGap;
+
+  const bubble = document.getElementById('bubble');
+  bubble.style.bottom = bubbleBottom + 'px';
+  bubble.style.right = (canvasRight + bubbleRight) + 'px';
+  bubble.style.fontSize = fontSize + 'px';
+  bubble.style.padding = padding + 'px ' + (padding+4) + 'px';
+  bubble.style.maxWidth = maxWidth + 'px';
+  bubble.style.borderRadius = borderRadius + 'px';
+
+  // Buttons
+  document.querySelectorAll('#bubble .btn-s, #bubble .btn-o').forEach(btn => {
+    btn.style.fontSize = btnSize + 'px';
+    btn.style.padding = btnPadV + 'px ' + btnPadH + 'px';
+  });
+
+  // Code output
+  document.getElementById('codeOutput').textContent =
+`// AvatarCanvas.tsx canvas style:
+bottom: ${canvasBottom}
+
+// AvatarCanvas.tsx bubble style:
+bottom: ${bubbleBottom}
+right: canvasRight + (${bubbleRight})
+
+// SpeechBubble.tsx:
+fontSize: '${fontSize}px'
+padding: '${padding}px ${padding+4}px'
+maxWidth: '${maxWidth}px'
+borderRadius: '${borderRadius}px'
+btnFontSize: '${btnSize}px'
+btnPadding: '${btnPadV}px ${btnPadH}px'`;
+}
+
+sliders.forEach(id => {
+  document.getElementById(id).addEventListener('input', update);
+});
+
+function resetDefaults() {
+  for (const [k,v] of Object.entries(defaults)) {
+    document.getElementById(k).value = v;
+  }
+  update();
+}
+
+update();
+</script>
+</body>
+</html>

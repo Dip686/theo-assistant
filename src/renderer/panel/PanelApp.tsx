@@ -47,6 +47,8 @@ const containerStyle: React.CSSProperties = {
   fontFamily: theme.font,
   fontSize: 13,
   overflow: 'hidden',
+  paddingTop: 24,
+  boxSizing: 'border-box',
   WebkitAppRegion: 'drag' as unknown as string,
 }
 

@@ -1,0 +1,1467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Theo — Modern 3D Concept</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Nunito:wght@700;800;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --skin: #C68642;
+    --skin-shadow: #A0622E;
+    --skin-hi: #DBA05A;
+    --hair: #1A1A2E;
+    --hair-hi: #2D2D44;
+    --shirt: #4A90D9;
+    --shirt-shadow: #3570B0;
+    --shirt-hi: #6AAFEF;
+    --jeans: #3D4F6F;
+    --jeans-shadow: #2D3F5F;
+    --shoe: #E8E8E8;
+    --bg: #0D1117;
+    --card: #161B22;
+    --card-border: #21262D;
+    --accent: #4A90D9;
+    --text: #E6EDF3;
+    --text-muted: #8B949E;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+    min-height: 100vh;
+  }
+
+  h1 {
+    font-family: 'Nunito', sans-serif;
+    font-size: 36px;
+    font-weight: 900;
+    background: linear-gradient(135deg, #4A90D9, #9B59B6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 4px;
+  }
+
+  .subtitle {
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    font-size: 15px;
+  }
+
+  .style-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #4A90D9, #9B59B6);
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 40px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .concept-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 24px;
+    max-width: 1200px;
+    width: 100%;
+  }
+
+  .concept-card {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 32px 24px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .concept-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #4A90D9, #9B59B6, #E74C3C);
+  }
+
+  .concept-card h3 {
+    font-family: 'Nunito', sans-serif;
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 20px;
+  }
+
+  .concept-card .label {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 16px;
+  }
+
+  /* ================================================================
+     THEO 3D CHARACTER — Pure CSS + SVG
+     Modern cartoon/3D style (think Duolingo, Notion, Apple Memoji)
+     ================================================================ */
+
+  .theo-3d {
+    width: 200px;
+    height: 280px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  /* HEAD */
+  .theo-head {
+    width: 120px;
+    height: 130px;
+    background: radial-gradient(ellipse at 40% 35%, var(--skin-hi), var(--skin) 50%, var(--skin-shadow) 100%);
+    border-radius: 50% 50% 45% 45%;
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    box-shadow:
+      0 8px 20px rgba(0,0,0,0.3),
+      inset 0 -8px 15px rgba(0,0,0,0.1),
+      inset 0 4px 10px rgba(255,255,255,0.05);
+    z-index: 3;
+  }
+
+  /* HAIR */
+  .theo-hair {
+    position: absolute;
+    top: -8px;
+    left: -6px;
+    right: -6px;
+    height: 75px;
+    background: radial-gradient(ellipse at 50% 60%, var(--hair-hi), var(--hair) 70%);
+    border-radius: 55% 55% 30% 30%;
+    z-index: 4;
+    box-shadow:
+      0 2px 8px rgba(0,0,0,0.4),
+      inset 0 3px 6px rgba(255,255,255,0.05);
+  }
+
+  /* Curly top tufts */
+  .theo-hair::before {
+    content: '';
+    position: absolute;
+    top: -14px;
+    left: 10px;
+    width: 110px;
+    height: 30px;
+    background:
+      radial-gradient(ellipse 14px 16px at 12px 14px, var(--hair) 60%, transparent 61%),
+      radial-gradient(ellipse 16px 18px at 35px 10px, var(--hair-hi) 60%, transparent 61%),
+      radial-gradient(ellipse 14px 16px at 58px 12px, var(--hair) 60%, transparent 61%),
+      radial-gradient(ellipse 16px 18px at 80px 8px, var(--hair-hi) 60%, transparent 61%),
+      radial-gradient(ellipse 12px 14px at 98px 14px, var(--hair) 60%, transparent 61%);
+  }
+
+  /* Trimmed sides */
+  .theo-hair-side-l, .theo-hair-side-r {
+    position: absolute;
+    width: 12px;
+    height: 35px;
+    background: linear-gradient(180deg, var(--hair) 0%, transparent 100%);
+    top: 50px;
+    z-index: 2;
+    border-radius: 4px;
+    opacity: 0.5;
+  }
+
+  .theo-hair-side-l { left: -4px; }
+  .theo-hair-side-r { right: -4px; }
+
+  /* EYES */
+  .theo-eyes {
+    position: absolute;
+    top: 48px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    display: flex;
+    justify-content: space-between;
+    z-index: 5;
+  }
+
+  .theo-eye {
+    width: 26px;
+    height: 26px;
+    background: white;
+    border-radius: 50%;
+    position: relative;
+    box-shadow:
+      0 2px 4px rgba(0,0,0,0.15),
+      inset 0 -2px 4px rgba(0,0,0,0.05);
+  }
+
+  .theo-eye::before {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background: radial-gradient(circle at 40% 40%, #2D2D44, var(--hair));
+    border-radius: 50%;
+    top: 6px;
+    left: 6px;
+  }
+
+  .theo-eye::after {
+    content: '';
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: white;
+    border-radius: 50%;
+    top: 6px;
+    left: 14px;
+  }
+
+  /* Eyebrows */
+  .theo-brow-l, .theo-brow-r {
+    position: absolute;
+    width: 28px;
+    height: 6px;
+    background: var(--hair);
+    border-radius: 3px;
+    top: 40px;
+    z-index: 6;
+  }
+  .theo-brow-l { left: 18px; transform: rotate(-5deg); }
+  .theo-brow-r { right: 18px; transform: rotate(5deg); }
+
+  /* NOSE */
+  .theo-nose {
+    position: absolute;
+    top: 72px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 14px;
+    height: 10px;
+    background: var(--skin-shadow);
+    border-radius: 50%;
+    z-index: 5;
+    opacity: 0.6;
+  }
+
+  /* MOUTH */
+  .theo-mouth {
+    position: absolute;
+    top: 88px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 35px;
+    height: 18px;
+    background: #C1553A;
+    border-radius: 0 0 20px 20px;
+    z-index: 5;
+    overflow: hidden;
+    box-shadow: inset 0 -3px 6px rgba(0,0,0,0.2);
+  }
+
+  .theo-mouth::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 10px;
+    background: #E87461;
+    border-radius: 50%;
+  }
+
+  /* EARS */
+  .theo-ear-l, .theo-ear-r {
+    position: absolute;
+    width: 18px;
+    height: 22px;
+    background: radial-gradient(ellipse at 50% 50%, var(--skin), var(--skin-shadow));
+    border-radius: 50%;
+    top: 52px;
+    z-index: 2;
+    box-shadow: inset -2px 0 4px rgba(0,0,0,0.1);
+  }
+
+  .theo-ear-l { left: -8px; }
+  .theo-ear-r { right: -8px; }
+
+  /* NECK */
+  .theo-neck {
+    position: absolute;
+    top: 130px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 36px;
+    height: 18px;
+    background: linear-gradient(180deg, var(--skin-shadow), var(--skin));
+    z-index: 1;
+    border-radius: 0 0 8px 8px;
+  }
+
+  /* BODY / T-SHIRT */
+  .theo-body {
+    position: absolute;
+    top: 140px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 110px;
+    height: 75px;
+    background: linear-gradient(180deg, var(--shirt-hi) 0%, var(--shirt) 30%, var(--shirt-shadow) 100%);
+    border-radius: 20px 20px 10px 10px;
+    z-index: 2;
+    box-shadow:
+      0 6px 16px rgba(0,0,0,0.25),
+      inset 0 2px 8px rgba(255,255,255,0.1);
+  }
+
+  /* Collar */
+  .theo-body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30px;
+    height: 14px;
+    background: var(--shirt-shadow);
+    border-radius: 0 0 15px 15px;
+  }
+
+  /* ARMS */
+  .theo-arm-l, .theo-arm-r {
+    position: absolute;
+    top: 145px;
+    width: 24px;
+    height: 70px;
+    z-index: 1;
+  }
+
+  .theo-arm-l { left: 12px; }
+  .theo-arm-r { right: 12px; }
+
+  .theo-arm-sleeve {
+    width: 24px;
+    height: 28px;
+    background: linear-gradient(180deg, var(--shirt), var(--shirt-shadow));
+    border-radius: 8px 8px 10px 10px;
+  }
+
+  .theo-arm-skin {
+    width: 20px;
+    height: 38px;
+    background: linear-gradient(180deg, var(--skin), var(--skin-shadow));
+    border-radius: 0 0 10px 10px;
+    margin: 0 auto;
+  }
+
+  .theo-hand {
+    width: 22px;
+    height: 18px;
+    background: radial-gradient(ellipse at 50% 40%, var(--skin-hi), var(--skin));
+    border-radius: 50%;
+    margin: -2px auto 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+  }
+
+  /* JEANS */
+  .theo-jeans {
+    position: absolute;
+    top: 208px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 45px;
+    background: linear-gradient(180deg, var(--jeans), var(--jeans-shadow));
+    border-radius: 0 0 6px 6px;
+    z-index: 2;
+  }
+
+  /* Jeans split */
+  .theo-jeans::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 25px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 2px;
+  }
+
+  /* LEGS */
+  .theo-leg-l, .theo-leg-r {
+    position: absolute;
+    top: 248px;
+    width: 34px;
+    height: 20px;
+    z-index: 2;
+  }
+
+  .theo-leg-l { left: 42px; }
+  .theo-leg-r { right: 42px; }
+
+  .theo-shoe {
+    width: 40px;
+    height: 18px;
+    background: linear-gradient(180deg, #F0F0F0, #D8D8D8);
+    border-radius: 8px 14px 6px 8px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+    position: relative;
+  }
+
+  .theo-shoe::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: #BBBBBB;
+    border-radius: 0 0 6px 8px;
+  }
+
+  /* ================================================================
+     ANIMATION VARIANTS
+     ================================================================ */
+
+  /* Idle bounce */
+  @keyframes idle-bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(-4px); }
+  }
+
+  .theo-3d.idle .theo-head {
+    animation: idle-bounce 2s ease-in-out infinite;
+  }
+
+  @keyframes idle-body {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(-2px); }
+  }
+
+  .theo-3d.idle .theo-body {
+    animation: idle-body 2s ease-in-out infinite 0.1s;
+  }
+
+  /* Wink */
+  .theo-3d.wink .theo-eye.left {
+    height: 4px;
+    top: 60px;
+    background: var(--hair);
+    border-radius: 4px;
+  }
+
+  .theo-3d.wink .theo-eye.left::before,
+  .theo-3d.wink .theo-eye.left::after {
+    display: none;
+  }
+
+  /* Wave arm */
+  @keyframes wave-arm {
+    0%, 100% { transform: rotate(-10deg); }
+    50% { transform: rotate(20deg); }
+  }
+
+  .theo-3d.wave .theo-arm-r {
+    transform-origin: top center;
+    transform: rotate(-40deg) translateX(10px) translateY(-20px);
+  }
+
+  .theo-3d.wave .theo-arm-r .theo-hand {
+    animation: wave-arm 0.5s ease-in-out infinite;
+  }
+
+  /* Peek — only show right side */
+  .theo-3d.peek {
+    width: 100px;
+    overflow: hidden;
+    direction: rtl;
+  }
+
+  /* ================================================================
+     WALK ANIMATION
+     ================================================================ */
+
+  @keyframes walk-bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    25% { transform: translateX(-50%) translateY(-6px) rotate(-2deg); }
+    75% { transform: translateX(-50%) translateY(-6px) rotate(2deg); }
+  }
+
+  @keyframes walk-body-bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    25% { transform: translateX(-50%) translateY(-3px) rotate(-1deg); }
+    75% { transform: translateX(-50%) translateY(-3px) rotate(1deg); }
+  }
+
+  @keyframes arm-swing-l {
+    0%, 100% { transform: rotate(15deg); }
+    50% { transform: rotate(-15deg); }
+  }
+
+  @keyframes arm-swing-r {
+    0%, 100% { transform: rotate(-15deg); }
+    50% { transform: rotate(15deg); }
+  }
+
+  @keyframes leg-swing-l {
+    0%, 100% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+  }
+
+  @keyframes leg-swing-r {
+    0%, 100% { transform: translateX(5px); }
+    50% { transform: translateX(-5px); }
+  }
+
+  .theo-3d.walking .theo-head {
+    animation: walk-bounce 0.5s ease-in-out infinite;
+  }
+
+  .theo-3d.walking .theo-body {
+    animation: walk-body-bounce 0.5s ease-in-out infinite;
+  }
+
+  .theo-3d.walking .theo-arm-l {
+    transform-origin: top center;
+    animation: arm-swing-l 0.5s ease-in-out infinite;
+  }
+
+  .theo-3d.walking .theo-arm-r {
+    transform-origin: top center;
+    animation: arm-swing-r 0.5s ease-in-out infinite;
+  }
+
+  .theo-3d.walking .theo-leg-l {
+    animation: leg-swing-l 0.5s ease-in-out infinite;
+  }
+
+  .theo-3d.walking .theo-leg-r {
+    animation: leg-swing-r 0.5s ease-in-out infinite;
+  }
+
+  /* ================================================================
+     SHADOW
+     ================================================================ */
+
+  .theo-shadow {
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 14px;
+    background: radial-gradient(ellipse, rgba(0,0,0,0.35), transparent 70%);
+    border-radius: 50%;
+    z-index: 0;
+  }
+
+  /* ================================================================
+     SPEECH BUBBLE (modern)
+     ================================================================ */
+
+  .modern-bubble {
+    background: white;
+    color: #1a1a2e;
+    border-radius: 16px;
+    padding: 14px 18px;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.5;
+    position: relative;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+    max-width: 240px;
+    margin: 0 auto 20px;
+    text-align: left;
+  }
+
+  .modern-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0; height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 10px solid white;
+  }
+
+  .modern-bubble .emoji {
+    font-size: 18px;
+    margin-right: 4px;
+  }
+
+  /* ================================================================
+     ANIMATION STAGE
+     ================================================================ */
+
+  .stage {
+    background: linear-gradient(180deg, #0D1117 0%, #161B22 100%);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    height: 380px;
+    position: relative;
+    overflow: hidden;
+    max-width: 800px;
+    width: 100%;
+    margin: 32px auto;
+  }
+
+  .stage-floor {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: linear-gradient(180deg, #1a1f2e 0%, #141822 100%);
+    border-top: 1px solid #21262D;
+  }
+
+  .stage-floor::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(74,144,217,0.2), transparent);
+  }
+
+  #stage-theo {
+    position: absolute;
+    bottom: 55px;
+    right: -200px;
+    transition: none;
+  }
+
+  #stage-bubble {
+    position: absolute;
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 10;
+  }
+
+  .controls {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 16px;
+  }
+
+  button {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 10px 24px;
+    background: linear-gradient(135deg, #4A90D9, #3570B0);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 12px rgba(74,144,217,0.3);
+  }
+
+  button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(74,144,217,0.4);
+  }
+
+  button.secondary {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    box-shadow: none;
+  }
+
+  button.secondary:hover {
+    background: #21262D;
+  }
+
+  /* ================================================================
+     T-SHIRT COLOR PICKER
+     ================================================================ */
+
+  .palette {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 16px;
+  }
+
+  .swatch {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+
+  .swatch:hover {
+    transform: scale(1.15);
+  }
+
+  .swatch.active {
+    border-color: white;
+    transform: scale(1.15);
+  }
+
+  /* ================================================================
+     TASK PANEL (Modern)
+     ================================================================ */
+
+  .task-panel {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    overflow: hidden;
+    width: 340px;
+    margin: 0 auto;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.3);
+  }
+
+  .panel-header {
+    background: linear-gradient(135deg, #4A90D9, #3570B0);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .panel-avatar {
+    width: 36px;
+    height: 36px;
+    background: radial-gradient(circle at 40% 35%, var(--skin-hi), var(--skin));
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.3);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .panel-avatar::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -3px;
+    right: -3px;
+    height: 18px;
+    background: var(--hair);
+    border-radius: 50% 50% 30% 30%;
+  }
+
+  .panel-avatar-eyes {
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 22px;
+    display: flex;
+    gap: 6px;
+  }
+
+  .panel-avatar-eye {
+    width: 6px;
+    height: 6px;
+    background: white;
+    border-radius: 50%;
+  }
+
+  .panel-header-text {
+    flex: 1;
+  }
+
+  .panel-header-text .name {
+    font-weight: 700;
+    font-size: 15px;
+    color: white;
+  }
+
+  .panel-header-text .status {
+    font-size: 11px;
+    color: rgba(255,255,255,0.7);
+  }
+
+  .panel-close {
+    color: rgba(255,255,255,0.6);
+    cursor: pointer;
+    font-size: 20px;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+  }
+
+  .panel-close:hover {
+    background: rgba(255,255,255,0.1);
+    color: white;
+  }
+
+  .panel-section {
+    padding: 16px 20px;
+  }
+
+  .panel-section-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+  }
+
+  .reminder-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--card-border);
+    font-size: 14px;
+  }
+
+  .reminder-item:last-of-type {
+    border-bottom: none;
+  }
+
+  .reminder-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    margin-right: 12px;
+    flex-shrink: 0;
+  }
+
+  .reminder-icon.eye { background: rgba(74,144,217,0.15); }
+  .reminder-icon.water { background: rgba(76,175,80,0.15); }
+  .reminder-icon.stretch { background: rgba(243,156,18,0.15); }
+  .reminder-icon.posture { background: rgba(155,89,182,0.15); }
+
+  .reminder-info { flex: 1; }
+  .reminder-name { font-weight: 600; }
+  .reminder-time-label { font-size: 12px; color: var(--text-muted); }
+
+  .modern-toggle {
+    width: 40px;
+    height: 22px;
+    border-radius: 11px;
+    background: #30363D;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .modern-toggle.on { background: #4A90D9; }
+
+  .modern-toggle::after {
+    content: '';
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: white;
+    top: 2px;
+    left: 2px;
+    transition: left 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+
+  .modern-toggle.on::after { left: 20px; }
+
+  .add-btn-modern {
+    width: 100%;
+    padding: 12px;
+    margin-top: 8px;
+    background: transparent;
+    border: 1px dashed var(--card-border);
+    color: var(--text-muted);
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: none;
+  }
+
+  .add-btn-modern:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(74,144,217,0.05);
+    transform: none;
+  }
+
+  .log-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  .log-time { width: 50px; font-family: monospace; font-size: 12px; flex-shrink: 0; }
+  .log-name { flex: 1; }
+  .log-status { font-size: 12px; font-weight: 600; }
+  .log-status.done { color: #4CAF50; }
+  .log-status.snoozed { color: #F39C12; }
+
+  .settings-footer {
+    padding: 14px 20px;
+    border-top: 1px solid var(--card-border);
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+
+  .settings-footer:hover { color: var(--accent); }
+
+  /* ================================================================
+     SNOOZE POPUP
+     ================================================================ */
+
+  .snooze-popup {
+    background: white;
+    border-radius: 12px;
+    padding: 16px;
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+    margin-top: 24px;
+  }
+
+  .snooze-popup span {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1a1a2e;
+    margin-right: 4px;
+  }
+
+  .snooze-btn {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 6px;
+    border: 1px solid #E0E0E0;
+    background: white;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.15s;
+    box-shadow: none;
+  }
+
+  .snooze-btn:hover {
+    background: #F5F5F5;
+    transform: none;
+  }
+
+  .snooze-btn.dismiss {
+    background: #E74C3C;
+    color: white;
+    border-color: #E74C3C;
+  }
+
+  /* ================================================================
+     COMPARISON SECTION
+     ================================================================ */
+
+  .compare-section {
+    max-width: 1200px;
+    width: 100%;
+    margin-top: 48px;
+    text-align: center;
+  }
+
+  .compare-section h2 {
+    font-family: 'Nunito', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    margin-bottom: 24px;
+  }
+
+  .compare-table {
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+
+  .compare-table th {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 2px solid var(--card-border);
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .compare-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--card-border);
+    text-align: left;
+  }
+
+  .compare-table tr:last-child td {
+    border-bottom: none;
+  }
+
+  .tag {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .tag.pixel { background: rgba(243,156,18,0.15); color: #F39C12; }
+  .tag.modern { background: rgba(74,144,217,0.15); color: #4A90D9; }
+</style>
+</head>
+<body>
+
+<h1>THEO</h1>
+<p class="subtitle">Desktop Avatar Assistant — Character Concept</p>
+<span class="style-badge">Modern 3D Style</span>
+
+<div class="concept-grid">
+  <!-- Idle pose -->
+  <div class="concept-card">
+    <h3>Idle (Breathing)</h3>
+    <div class="theo-3d idle">
+      <div class="theo-head">
+        <div class="theo-hair">
+          <div class="theo-hair-side-l"></div>
+          <div class="theo-hair-side-r"></div>
+        </div>
+        <div class="theo-ear-l"></div>
+        <div class="theo-ear-r"></div>
+        <div class="theo-brow-l"></div>
+        <div class="theo-brow-r"></div>
+        <div class="theo-eyes">
+          <div class="theo-eye left"></div>
+          <div class="theo-eye right"></div>
+        </div>
+        <div class="theo-nose"></div>
+        <div class="theo-mouth"></div>
+      </div>
+      <div class="theo-neck"></div>
+      <div class="theo-body"></div>
+      <div class="theo-arm-l"><div class="theo-arm-sleeve"></div><div class="theo-arm-skin"></div><div class="theo-hand"></div></div>
+      <div class="theo-arm-r"><div class="theo-arm-sleeve"></div><div class="theo-arm-skin"></div><div class="theo-hand"></div></div>
+      <div class="theo-jeans"></div>
+      <div class="theo-leg-l"><div class="theo-shoe"></div></div>
+      <div class="theo-leg-r"><div class="theo-shoe"></div></div>
+      <div class="theo-shadow"></div>
+    </div>
+    <p class="label">Gentle breathing animation</p>
+  </div>
+
+  <!-- Walking -->
+  <div class="concept-card">
+    <h3>Walking</h3>
+    <div class="theo-3d walking">
+      <div class="theo-head">
+        <div class="theo-hair">
+          <div class="theo-hair-side-l"></div>
+          <div class="theo-hair-side-r"></div>
+        </div>
+        <div class="theo-ear-l"></div>
+        <div class="theo-ear-r"></div>
+        <div class="theo-brow-l"></div>
+        <div class="theo-brow-r"></div>
+        <div class="theo-eyes">
+          <div class="theo-eye left"></div>
+          <div class="theo-eye right"></div>
+        </div>
+        <div class="theo-nose"></div>
+        <div class="theo-mouth"></div>
+      </div>
+      <div class="theo-neck"></div>
+      <div class="theo-body"></div>
+      <div class="theo-arm-l"><div class="theo-arm-sleeve"></div><div class="theo-arm-skin"></div><div class="theo-hand"></div></div>
+      <div class="theo-arm-r"><div class="theo-arm-sleeve"></div><div class="theo-arm-skin"></div><div class="theo-hand"></div></div>
+      <div class="theo-jeans"></div>
+      <div class="theo-leg-l"><div class="theo-shoe"></div></div>
+      <div class="theo-leg-r"><div class="theo-shoe"></div></div>
+      <div class="theo-shadow"></div>
+    </div>
+    <p class="label">Bouncy walk with arm swing</p>
+  </div>
+
+  <!-- Wink + Wave -->
+  <div class="concept-card">
+    <h3>Wink + Wave 👋</h3>
+    <div class="theo-3d wink wave idle">
+      <div class="theo-head">
+        <div class="theo-hair">
+          <div class="theo-hair-side-l"></div>
+          <div class="theo-hair-side-r"></div>
+        </div>
+        <div class="theo-ear-l"></div>
+        <div class="theo-ear-r"></div>
+        <div class="theo-brow-l"></div>
+        <div class="theo-brow-r"></div>
+        <div class="theo-eyes">
+          <div class="theo-eye left"></div>
+          <div class="theo-eye right"></div>
+        </div>
+        <div class="theo-nose"></div>
+        <div class="theo-mouth"></div>
+      </div>
+      <div class="theo-neck"></div>
+      <div class="theo-body"></div>
+      <div class="theo-arm-l"><div class="theo-arm-sleeve"></div><div class="theo-arm-skin"></div><div class="theo-hand"></div></div>
+      <div class="theo-arm-r"><div class="theo-arm-sleeve"></div><div class="theo-arm-skin"></div><div class="theo-hand"></div></div>
+      <div class="theo-jeans"></div>
+      <div class="theo-leg-l"><div class="theo-shoe"></div></div>
+      <div class="theo-leg-r"><div class="theo-shoe"></div></div>
+      <div class="theo-shadow"></div>
+    </div>
+    <p class="label">Cheeky wink + hand wave</p>
+  </div>
+
+  <!-- With speech bubble -->
+  <div class="concept-card">
+    <h3>Reminder</h3>
+    <div class="modern-bubble">
+      <span class="emoji">👀</span> Wink wink! Please look away from the screen for 20 seconds.
+    </div>
+    <div class="theo-3d idle" style="height: 240px;">
+      <div class="theo-head" style="top:0">
+        <div class="theo-hair">
+          <div class="theo-hair-side-l"></div>
+          <div class="theo-hair-side-r"></div>
+        </div>
+        <div class="theo-ear-l"></div>
+        <div class="theo-ear-r"></div>
+        <div class="theo-brow-l"></div>
+        <div class="theo-brow-r"></div>
+        <div class="theo-eyes">
+          <div class="theo-eye left"></div>
+          <div class="theo-eye right"></div>
+        </div>
+        <div class="theo-nose"></div>
+        <div class="theo-mouth"></div>
+      </div>
+      <div class="theo-neck" style="top:120px"></div>
+      <div class="theo-body" style="top:130px"></div>
+      <div class="theo-arm-l" style="top:135px"><div class="theo-arm-sleeve"></div><div class="theo-arm-skin"></div><div class="theo-hand"></div></div>
+      <div class="theo-arm-r" style="top:135px"><div class="theo-arm-sleeve"></div><div class="theo-arm-skin"></div><div class="theo-hand"></div></div>
+      <div class="theo-jeans" style="top:198px"></div>
+      <div class="theo-leg-l" style="top:238px"><div class="theo-shoe"></div></div>
+      <div class="theo-leg-r" style="top:238px"><div class="theo-shoe"></div></div>
+      <div class="theo-shadow" style="bottom:-15px"></div>
+    </div>
+    <p class="label">Speech bubble with reminder</p>
+  </div>
+</div>
+
+<!-- T-Shirt Color -->
+<div class="concept-card" style="margin-top:32px; max-width:600px; width:100%;">
+  <h3>T-Shirt Color Customization</h3>
+  <div class="theo-3d idle" id="color-theo" style="margin-bottom: 16px;">
+    <div class="theo-head">
+      <div class="theo-hair"><div class="theo-hair-side-l"></div><div class="theo-hair-side-r"></div></div>
+      <div class="theo-ear-l"></div><div class="theo-ear-r"></div>
+      <div class="theo-brow-l"></div><div class="theo-brow-r"></div>
+      <div class="theo-eyes"><div class="theo-eye left"></div><div class="theo-eye right"></div></div>
+      <div class="theo-nose"></div><div class="theo-mouth"></div>
+    </div>
+    <div class="theo-neck"></div>
+    <div class="theo-body" id="color-body"></div>
+    <div class="theo-arm-l"><div class="theo-arm-sleeve" id="color-sleeve-l"></div><div class="theo-arm-skin"></div><div class="theo-hand"></div></div>
+    <div class="theo-arm-r"><div class="theo-arm-sleeve" id="color-sleeve-r"></div><div class="theo-arm-skin"></div><div class="theo-hand"></div></div>
+    <div class="theo-jeans"></div>
+    <div class="theo-leg-l"><div class="theo-shoe"></div></div>
+    <div class="theo-leg-r"><div class="theo-shoe"></div></div>
+    <div class="theo-shadow"></div>
+  </div>
+  <div class="palette">
+    <div class="swatch active" style="background:#4A90D9" onclick="changeColor('#4A90D9','#3570B0','#6AAFEF',this)"></div>
+    <div class="swatch" style="background:#4CAF50" onclick="changeColor('#4CAF50','#388E3C','#66C96A',this)"></div>
+    <div class="swatch" style="background:#E74C3C" onclick="changeColor('#E74C3C','#C0392B','#F07060',this)"></div>
+    <div class="swatch" style="background:#9B59B6" onclick="changeColor('#9B59B6','#7D3C98','#B87DD0',this)"></div>
+    <div class="swatch" style="background:#F39C12" onclick="changeColor('#F39C12','#D68910','#F5B041',this)"></div>
+    <div class="swatch" style="background:#34495E" onclick="changeColor('#34495E','#2C3E50','#4A6278',this)"></div>
+  </div>
+</div>
+
+<!-- Reminder Animation -->
+<div style="max-width:800px; width:100%; margin-top:48px; text-align:center;">
+  <h2 style="font-family:'Nunito',sans-serif; font-size:22px; font-weight:800; margin-bottom:16px;">Reminder Animation</h2>
+  <div class="stage" id="stage">
+    <div id="stage-bubble" class="modern-bubble" style="position:absolute; right:120px; bottom:290px;">
+      <span class="emoji">👀</span> Wink wink! Please look away from the screen for 20 seconds.
+    </div>
+    <div id="stage-theo" class="theo-3d walking" style="transform:scale(0.85);">
+      <div class="theo-head">
+        <div class="theo-hair"><div class="theo-hair-side-l"></div><div class="theo-hair-side-r"></div></div>
+        <div class="theo-ear-l"></div><div class="theo-ear-r"></div>
+        <div class="theo-brow-l"></div><div class="theo-brow-r"></div>
+        <div class="theo-eyes"><div class="theo-eye left"></div><div class="theo-eye right"></div></div>
+        <div class="theo-nose"></div><div class="theo-mouth"></div>
+      </div>
+      <div class="theo-neck"></div>
+      <div class="theo-body"></div>
+      <div class="theo-arm-l"><div class="theo-arm-sleeve"></div><div class="theo-arm-skin"></div><div class="theo-hand"></div></div>
+      <div class="theo-arm-r"><div class="theo-arm-sleeve"></div><div class="theo-arm-skin"></div><div class="theo-hand"></div></div>
+      <div class="theo-jeans"></div>
+      <div class="theo-leg-l"><div class="theo-shoe"></div></div>
+      <div class="theo-leg-r"><div class="theo-shoe"></div></div>
+      <div class="theo-shadow"></div>
+    </div>
+    <div class="stage-floor"></div>
+  </div>
+  <div class="controls">
+    <button onclick="playAnimation()">▶ Play Reminder</button>
+    <button class="secondary" onclick="resetAnim()">↻ Reset</button>
+  </div>
+</div>
+
+<!-- Task Panel -->
+<div style="max-width:400px; width:100%; margin-top:48px; text-align:center;">
+  <h2 style="font-family:'Nunito',sans-serif; font-size:22px; font-weight:800; margin-bottom:16px;">Task Panel</h2>
+  <div class="task-panel">
+    <div class="panel-header">
+      <div class="panel-avatar">
+        <div class="panel-avatar-eyes">
+          <div class="panel-avatar-eye"></div>
+          <div class="panel-avatar-eye"></div>
+        </div>
+      </div>
+      <div class="panel-header-text">
+        <div class="name">Theo</div>
+        <div class="status">Next reminder in 4 min</div>
+      </div>
+      <div class="panel-close">×</div>
+    </div>
+    <div class="panel-section">
+      <div class="panel-section-title">Active Reminders</div>
+      <div class="reminder-item">
+        <div class="reminder-icon eye">👀</div>
+        <div class="reminder-info">
+          <div class="reminder-name">Screen Break</div>
+          <div class="reminder-time-label">Every 20 min</div>
+        </div>
+        <div class="modern-toggle on" onclick="this.classList.toggle('on')"></div>
+      </div>
+      <div class="reminder-item">
+        <div class="reminder-icon water">💧</div>
+        <div class="reminder-info">
+          <div class="reminder-name">Hydration</div>
+          <div class="reminder-time-label">Every 30 min</div>
+        </div>
+        <div class="modern-toggle on" onclick="this.classList.toggle('on')"></div>
+      </div>
+      <div class="reminder-item">
+        <div class="reminder-icon stretch">🙆</div>
+        <div class="reminder-info">
+          <div class="reminder-name">Stretch</div>
+          <div class="reminder-time-label">Every 45 min</div>
+        </div>
+        <div class="modern-toggle on" onclick="this.classList.toggle('on')"></div>
+      </div>
+      <div class="reminder-item">
+        <div class="reminder-icon posture">🧘</div>
+        <div class="reminder-info">
+          <div class="reminder-name" style="color:var(--text-muted)">Posture Check</div>
+          <div class="reminder-time-label">Every 15 min</div>
+        </div>
+        <div class="modern-toggle" onclick="this.classList.toggle('on')"></div>
+      </div>
+      <button class="add-btn-modern">+ Add Reminder</button>
+    </div>
+    <div class="panel-section" style="border-top:1px solid var(--card-border); padding-top:14px;">
+      <div class="panel-section-title">Recent</div>
+      <div class="log-item">
+        <span class="log-time">10:30</span>
+        <span class="log-name">Screen Break</span>
+        <span class="log-status done">✓ Done</span>
+      </div>
+      <div class="log-item">
+        <span class="log-time">10:15</span>
+        <span class="log-name">Hydration</span>
+        <span class="log-status done">✓ Done</span>
+      </div>
+      <div class="log-item">
+        <span class="log-time">10:00</span>
+        <span class="log-name">Stretch</span>
+        <span class="log-status snoozed">Snoozed</span>
+      </div>
+    </div>
+    <div class="settings-footer">⚙️ Settings</div>
+  </div>
+
+  <!-- Snooze popup -->
+  <div class="snooze-popup">
+    <span>Snooze?</span>
+    <button class="snooze-btn">5 min</button>
+    <button class="snooze-btn">10 min</button>
+    <button class="snooze-btn dismiss">✕</button>
+  </div>
+</div>
+
+<!-- Comparison -->
+<div class="compare-section">
+  <h2>Pixel Art vs Modern 3D</h2>
+  <table class="compare-table">
+    <tr>
+      <th>Aspect</th>
+      <th><span class="tag pixel">Pixel Art</span></th>
+      <th><span class="tag modern">Modern 3D</span></th>
+    </tr>
+    <tr>
+      <td>Vibe</td>
+      <td>Retro, nostalgic, indie</td>
+      <td>Polished, friendly, professional</td>
+    </tr>
+    <tr>
+      <td>Animation</td>
+      <td>Sprite sheet frames</td>
+      <td>CSS/JS smooth transitions</td>
+    </tr>
+    <tr>
+      <td>Scaling</td>
+      <td>Fixed sizes (pixelated)</td>
+      <td>Scales to any size cleanly</td>
+    </tr>
+    <tr>
+      <td>Color customization</td>
+      <td>Requires recolored sprites</td>
+      <td>CSS variables, instant</td>
+    </tr>
+    <tr>
+      <td>Implementation</td>
+      <td>Canvas + sprite sheets</td>
+      <td>CSS/SVG + JS animations</td>
+    </tr>
+    <tr>
+      <td>Asset creation</td>
+      <td>Draw each frame manually</td>
+      <td>One model, animate with code</td>
+    </tr>
+    <tr>
+      <td>Feel</td>
+      <td>Charming, lightweight</td>
+      <td>Premium, app-like</td>
+    </tr>
+  </table>
+</div>
+
+<script>
+  // T-shirt color change
+  function changeColor(color, shadow, highlight, el) {
+    document.querySelectorAll('.palette .swatch').forEach(s => s.classList.remove('active'));
+    el.classList.add('active');
+
+    const body = document.getElementById('color-body');
+    const sleeveL = document.getElementById('color-sleeve-l');
+    const sleeveR = document.getElementById('color-sleeve-r');
+
+    body.style.background = `linear-gradient(180deg, ${highlight} 0%, ${color} 30%, ${shadow} 100%)`;
+    body.style.setProperty('--shirt', color);
+    sleeveL.style.background = `linear-gradient(180deg, ${color}, ${shadow})`;
+    sleeveR.style.background = `linear-gradient(180deg, ${color}, ${shadow})`;
+
+    // Also update collar
+    body.style.setProperty('--shirt-shadow', shadow);
+  }
+
+  // Reminder animation
+  let animRunning = false;
+
+  function playAnimation() {
+    if (animRunning) return;
+    animRunning = true;
+
+    const theo = document.getElementById('stage-theo');
+    const bubble = document.getElementById('stage-bubble');
+    const stage = document.getElementById('stage');
+    const stageW = stage.offsetWidth;
+
+    // Reset
+    theo.style.transition = 'none';
+    theo.style.right = '-200px';
+    theo.className = 'theo-3d walking';
+    bubble.style.opacity = '0';
+
+    // Force reflow
+    void theo.offsetWidth;
+
+    // Walk in
+    theo.style.transition = 'right 2s ease-out';
+    theo.style.right = '80px';
+
+    setTimeout(() => {
+      // Stop walking, show idle
+      theo.className = 'theo-3d idle';
+
+      // Show bubble
+      setTimeout(() => {
+        bubble.style.opacity = '1';
+        bubble.style.right = '160px';
+        bubble.style.bottom = '300px';
+
+        // Wait, then wave + walk out
+        setTimeout(() => {
+          bubble.style.opacity = '0';
+
+          setTimeout(() => {
+            theo.className = 'theo-3d wink wave idle';
+
+            setTimeout(() => {
+              theo.className = 'theo-3d walking';
+              theo.style.transition = 'right 2s ease-in';
+              theo.style.right = '-200px';
+
+              setTimeout(() => {
+                theo.className = 'theo-3d';
+                animRunning = false;
+              }, 2000);
+            }, 1200);
+          }, 300);
+        }, 3000);
+      }, 300);
+    }, 2000);
+  }
+
+  function resetAnim() {
+    animRunning = false;
+    const theo = document.getElementById('stage-theo');
+    const bubble = document.getElementById('stage-bubble');
+    theo.style.transition = 'none';
+    theo.style.right = '-200px';
+    theo.className = 'theo-3d';
+    bubble.style.opacity = '0';
+  }
+</script>
+
+</body>
+</html>
