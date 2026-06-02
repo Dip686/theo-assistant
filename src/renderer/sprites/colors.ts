@@ -1,33 +1,38 @@
-// Theo's color palette — extracted from design prototype
+/**
+ * Color palette switcher — re-exports from Theo or Missi based on avatarConfig.
+ */
 
-export const SKIN = '#C68642'
-export const SKIN_SHADOW = '#A0622E'
-export const SKIN_HI = '#DBA05A'
-export const HAIR = '#2A2A3E'
-export const HAIR_HI = '#4A4A6E'
-export const HAIR_OUTLINE = '#0A0A14'
-export const EYE_WHITE = '#FFFFFF'
-export const EYE_PUPIL = '#1A1A2E'
-export const MOUTH = '#C1553A'
-export const JEANS = '#3D4F6F'
-export const JEANS_SHADOW = '#2D3F5F'
-export const SHOE = '#E8E8E8'
-export const SHOE_SHADOW = '#CCCCCC'
+import { USE_THEO } from './avatarConfig'
+import * as theo from './colorsTheo'
+import * as missi from './colorsMissi'
 
-export const DEFAULT_SHIRT = '#4A90D9'
+const palette = USE_THEO ? theo : missi
 
-export const SHIRT_PRESETS = [
-  { name: 'Ocean Blue', color: '#4A90D9' },
-  { name: 'Forest Green', color: '#4CAF50' },
-  { name: 'Sunset Red', color: '#E74C3C' },
-  { name: 'Purple Haze', color: '#9B59B6' },
-  { name: 'Mustard', color: '#F39C12' },
-  { name: 'Charcoal', color: '#34495E' },
-] as const
+export const SKIN = palette.SKIN
+export const SKIN_SHADOW = palette.SKIN_SHADOW
+export const SKIN_HI = palette.SKIN_HI
+export const HAIR = palette.HAIR
+export const HAIR_HI = palette.HAIR_HI
+export const HAIR_OUTLINE = palette.HAIR_OUTLINE
+export const HAIR_STRAND = palette.HAIR_STRAND
+export const EYE_WHITE = palette.EYE_WHITE
+export const EYE_PUPIL = palette.EYE_PUPIL
+export const EYE_IRIS = palette.EYE_IRIS
+export const MOUTH = palette.MOUTH
+export const MOUTH_HI = palette.MOUTH_HI
+export const BLUSH = palette.BLUSH
+export const GLASSES = palette.GLASSES
+export const GLASSES_HI = palette.GLASSES_HI
+export const EYEBROW = palette.EYEBROW
+export const JEANS = palette.JEANS
+export const JEANS_SHADOW = palette.JEANS_SHADOW
+export const SHOE = palette.SHOE
+export const SHOE_SHADOW = palette.SHOE_SHADOW
+export const DRESS = palette.DRESS
+export const DRESS_SHADOW = palette.DRESS_SHADOW
+export const DRESS_HI = palette.DRESS_HI
+export const FLOWER_DOT = palette.FLOWER_DOT
 
-export function getShirtShadow(color: string): string {
-  const r = Math.max(0, parseInt(color.slice(1, 3), 16) - 30)
-  const g = Math.max(0, parseInt(color.slice(3, 5), 16) - 30)
-  const b = Math.max(0, parseInt(color.slice(5, 7), 16) - 30)
-  return `rgb(${r},${g},${b})`
-}
+export const DEFAULT_SHIRT = palette.DEFAULT_SHIRT
+export const SHIRT_PRESETS = palette.SHIRT_PRESETS
+export const getShirtShadow = palette.getShirtShadow

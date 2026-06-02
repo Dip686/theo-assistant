@@ -11,3 +11,4 @@ build/*
 !build/icon.ico
 coverage/
 .claude/
+src/renderer/sprites/avatarConfig.ts
