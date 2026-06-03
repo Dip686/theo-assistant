@@ -35,10 +35,25 @@ export interface ReminderLogEntry {
   snoozeDuration?: number
 }
 
+export interface TaskNote {
+  text: string
+  createdAt: string
+}
+
+export interface Task {
+  id: string
+  title: string
+  status: 'todo' | 'in_progress' | 'done' | 'deferred'
+  notes: TaskNote[]
+  createdAt: string
+  updatedAt: string
+}
+
 export interface TheoData {
   reminders: Reminder[]
   settings: Settings
   log: ReminderLogEntry[]
+  tasks: Task[]
 }
 
 // IPC Channel names
@@ -60,6 +75,16 @@ export const IPC = {
   SETTINGS_GET: 'settings:get',
   SETTINGS_SAVE: 'settings:save',
   LOG_GET: 'log:get',
+
+  // Tasks
+  TASKS_LIST: 'tasks:list',
+  TASKS_CREATE: 'tasks:create',
+  TASKS_UPDATE: 'tasks:update',
+  TASKS_DELETE: 'tasks:delete',
+  TASKS_ADD_NOTE: 'tasks:add-note',
+
+  // Panel navigation
+  PANEL_OPEN_TAB: 'panel:open-tab',
 } as const
 
 // Default reminders that ship with the app

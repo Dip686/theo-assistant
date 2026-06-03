@@ -7,6 +7,8 @@ import {
   Reminder,
   Settings,
   ReminderLogEntry,
+  Task,
+  TaskNote,
   DEFAULT_REMINDERS,
   DEFAULT_SETTINGS,
 } from '../../shared/types'
@@ -33,6 +35,7 @@ function seedData(): TheoData {
     })),
     settings: { ...DEFAULT_SETTINGS },
     log: [],
+    tasks: [],
   }
 }
 
@@ -45,6 +48,8 @@ export function loadData(): TheoData {
     try {
       const raw = readFileSync(DATA_FILE, 'utf-8')
       data = JSON.parse(raw) as TheoData
+      // Migrate: add tasks array if missing (pre-v2.1 data files)
+      if (!data.tasks) data.tasks = []
       return data
     } catch {
       // Corrupted file, start fresh
@@ -133,4 +138,54 @@ export function addLogEntry(entry: ReminderLogEntry): void {
     d.log = d.log.slice(-100)
   }
   writeToDisk()
+}
+
+// ============================================================
+// Tasks
+// ============================================================
+
+export function getTasks(): Task[] {
+  return loadData().tasks
+}
+
+export function createTask(title: string): Task {
+  const d = loadData()
+  const now = new Date().toISOString()
+  const task: Task = {
+    id: uuid(),
+    title,
+    status: 'todo',
+    notes: [],
+    createdAt: now,
+    updatedAt: now,
+  }
+  d.tasks.unshift(task) // newest first
+  writeToDisk()
+  return task
+}
+
+export function updateTask(updated: Task): Task {
+  const d = loadData()
+  const idx = d.tasks.findIndex((t) => t.id === updated.id)
+  if (idx === -1) throw new Error(`Task ${updated.id} not found`)
+  updated.updatedAt = new Date().toISOString()
+  d.tasks[idx] = updated
+  writeToDisk()
+  return updated
+}
+
+export function deleteTask(id: string): void {
+  const d = loadData()
+  d.tasks = d.tasks.filter((t) => t.id !== id)
+  writeToDisk()
+}
+
+export function addTaskNote(taskId: string, text: string): Task {
+  const d = loadData()
+  const task = d.tasks.find((t) => t.id === taskId)
+  if (!task) throw new Error(`Task ${taskId} not found`)
+  task.notes.push({ text, createdAt: new Date().toISOString() })
+  task.updatedAt = new Date().toISOString()
+  writeToDisk()
+  return task
 }

@@ -6,20 +6,34 @@ A pixel-art desktop avatar assistant for macOS and Windows. Theo is a small kid 
 
 ## How It Works
 
+<p align="center">
+  <img src="assets/demo.png" alt="Theo hydration reminder demo" width="480" />
+</p>
+
 1. Theo stays hidden — no dock icon, just a system tray icon
 2. When a reminder fires, he peeks from the screen edge, walks in with a bouncy pixel-art animation, and shows a speech bubble
 3. You can dismiss ("OK") or snooze (5/10 min)
 4. He waves goodbye and walks back off-screen
 5. If you're actively typing, he uses **gentle mode** (faster, less intrusive animations)
 
-<p align="left">
-  <img src="assets/demo.png" alt="Theo hydration reminder demo" width="480" />
+## Quick Capture Todos
+
+Capture ideas and tasks without leaving your workflow. Press **Cmd+Shift+N** (macOS) / **Ctrl+Shift+N** (Windows) to open the task panel instantly.
+
+<p align="center">
+  <img src="assets/tasks-board.png" alt="Tasks board view with accordions" width="340" />
 </p>
 
+- **Chat view** — Type a task, press Enter. Each task is a card you can expand to add follow-up notes and progress updates.
+- **Board view** — Vertical accordion sections: **Todo**, **In Progress**, **Done**, and **Deferred**. Collapse/expand each section. Move tasks between sections with arrow buttons.
+- **Notes thread** — Click any task to expand it. Add timestamped notes to track progress over time.
+- **Status cycling** — Click the status chip on a task to cycle: Todo → In Progress → Done → Deferred → Todo.
+- **Persisted locally** — All tasks saved to `~/.theo/data.json`. No accounts, no cloud.
 ## Features
 
 - **Pixel art avatar** — Hand-drawn sprite with walk cycle, peek, wave, and front-facing poses
 - **Reminder engine** — Interval-based (every N minutes) or scheduled (specific time) reminders
+- **Quick capture** — Chat-style task input with kanban board view (Cmd+Shift+N)
 - **Task panel** — Full UI to create, edit, delete, and toggle reminders
 - **Settings** — Sound on/off, volume, outfit color (6 presets), animation speed, quiet hours
 - **System awareness** — Respects Do Not Disturb, detects idle/sleep/lock, gentle mode when typing
@@ -60,11 +74,19 @@ npm install
 npm run dev
 ```
 
-### Dev Shortcuts
+### Keyboard Shortcuts
 
-- **Cmd+Shift+T** (macOS) / **Ctrl+Shift+T** (Windows) — Trigger a test reminder animation
-- **System tray > Show Theo** — Trigger test reminder
-- **System tray > Task Panel** — Open the configuration panel
+| Shortcut | Action |
+|----------|--------|
+| `Cmd+Shift+T` / `Ctrl+Shift+T` | Trigger a test reminder animation |
+| `Cmd+Shift+N` / `Ctrl+Shift+N` | Open Quick Capture (Tasks tab) |
+
+### System Tray
+
+- **Show Theo** — Trigger test reminder
+- **Quick Capture** — Open Tasks tab directly
+- **Task Panel** — Open the full configuration panel
+- **Quit Theo** — Exit the app
 
 ### Build
 
@@ -125,7 +147,7 @@ src/
     tray.ts              # System tray with programmatic icon
     reminder/
       engine.ts          # Timer scheduler, idle detection, gentle mode
-      store.ts           # JSON file CRUD (reminders, settings, log)
+      store.ts           # JSON file CRUD (reminders, settings, tasks, log)
     windows/
       avatarWindow.ts    # Transparent overlay window (platform-aware positioning)
       panelWindow.ts     # Task panel window
@@ -139,7 +161,8 @@ src/
       animationController.ts  # State machine (hidden/peek/walk/talk/wave)
       sound.ts           # Doot doot notification sound
     panel/
-      PanelApp.tsx       # Tabbed panel (Reminders/Settings/Log)
+      PanelApp.tsx       # Tabbed panel (Tasks/Reminders/Settings/Log)
+      TasksPanel.tsx     # Quick capture chat + kanban board
       ReminderList.tsx   # Reminder CRUD list
       ReminderForm.tsx   # Create/edit reminder form
       SettingsPanel.tsx  # Settings UI

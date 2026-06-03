@@ -1,12 +1,16 @@
 import { BrowserWindow, screen } from 'electron'
 import { join } from 'path'
+import { IPC } from '../../shared/types'
 
 let panelWindow: BrowserWindow | null = null
 
-export function createPanelWindow(): BrowserWindow {
+export function createPanelWindow(openTab?: string): BrowserWindow {
   if (panelWindow && !panelWindow.isDestroyed()) {
     panelWindow.show()
     panelWindow.focus()
+    if (openTab) {
+      panelWindow.webContents.send(IPC.PANEL_OPEN_TAB, openTab)
+    }
     return panelWindow
   }
 
@@ -40,6 +44,9 @@ export function createPanelWindow(): BrowserWindow {
 
   panelWindow.once('ready-to-show', () => {
     panelWindow?.show()
+    if (openTab) {
+      panelWindow?.webContents.send(IPC.PANEL_OPEN_TAB, openTab)
+    }
   })
 
   panelWindow.on('closed', () => {
@@ -49,8 +56,8 @@ export function createPanelWindow(): BrowserWindow {
   return panelWindow
 }
 
-export function showPanelWindow(): void {
-  createPanelWindow()
+export function showPanelWindow(openTab?: string): void {
+  createPanelWindow(openTab)
 }
 
 export function getPanelWindow(): BrowserWindow | null {
