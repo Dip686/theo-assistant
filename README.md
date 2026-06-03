@@ -7,7 +7,7 @@ A pixel-art desktop avatar assistant for macOS and Windows. Theo is a small kid 
 ## How It Works
 
 <p align="center">
-  <img src="assets/demo.gif" alt="Theo hydration reminder demo" width="480" />
+  <img src="assets/demo.png" alt="Theo hydration reminder demo" width="480" />
 </p>
 
 1. Theo stays hidden — no dock icon, just a system tray icon
