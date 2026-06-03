@@ -99,6 +99,56 @@ describe('computeWindowPosition', () => {
   })
 })
 
+// ─── Multi-monitor scenarios ──────────────────────────────────────────────
+
+describe('Multi-monitor positioning', () => {
+  // Second monitor to the right of the primary (macOS)
+  const SECONDARY_RIGHT = {
+    size: { width: 1920, height: 1080 },
+    workArea: { x: 1512, y: 0, width: 1920, height: 1080 },  // offset x = primary width
+  }
+
+  // Second monitor to the left (Windows)
+  const SECONDARY_LEFT_WIN = {
+    size: { width: 1920, height: 1080 },
+    workArea: { x: -1920, y: 0, width: 1920, height: 1040 },  // negative x, taskbar
+  }
+
+  // Monitor above the primary
+  const SECONDARY_ABOVE = {
+    size: { width: 2560, height: 1440 },
+    workArea: { x: 0, y: -1440, width: 2560, height: 1440 },
+  }
+
+  it('macOS: positions correctly on a secondary monitor to the right', () => {
+    const pos = computeWindowPosition('darwin', SECONDARY_RIGHT.size, SECONDARY_RIGHT.workArea)
+
+    // Should use display.size for macOS, but position is relative to display origin
+    // For macOS, computeWindowPosition returns position relative to (0,0) of the display's size
+    // The actual offset is handled by Electron's display bounds
+    expect(pos.x).toBe(SECONDARY_RIGHT.size.width - WIN_WIDTH) // 1920 - 600 = 1320
+    expect(pos.y).toBe(SECONDARY_RIGHT.size.height - WIN_HEIGHT) // 1080 - 500 = 580
+  })
+
+  it('Windows: positions correctly on a secondary monitor to the left (negative x)', () => {
+    const pos = computeWindowPosition('win32', SECONDARY_LEFT_WIN.size, SECONDARY_LEFT_WIN.workArea)
+
+    // workArea.x is -1920, so window should be at -1920 + 1920 - 600 = -600
+    expect(pos.x).toBe(-1920 + 1920 - WIN_WIDTH)  // -600
+    expect(pos.y).toBe(1040 - WIN_HEIGHT)          // 540
+    // Window bottom stays above taskbar
+    expect(pos.y + WIN_HEIGHT).toBe(1040)
+  })
+
+  it('Windows: positions correctly on a monitor above', () => {
+    const pos = computeWindowPosition('win32', SECONDARY_ABOVE.size, SECONDARY_ABOVE.workArea)
+
+    // workArea.y is -1440
+    expect(pos.y).toBe(-1440 + 1440 - WIN_HEIGHT)  // -500
+    expect(pos.y + WIN_HEIGHT).toBe(0)  // bottom edge at y=0 (top of primary)
+  })
+})
+
 // ─── Window dimensions ────────────────────────────────────────────────────
 
 describe('Window dimensions', () => {

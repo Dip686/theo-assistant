@@ -1,5 +1,5 @@
-import { app, globalShortcut } from 'electron'
-import { createAvatarWindow, setAvatarInteractive, getAvatarWindow } from './windows/avatarWindow'
+import { app, globalShortcut, screen } from 'electron'
+import { createAvatarWindow, setAvatarInteractive, getAvatarWindow, moveToActiveDisplay, moveToPrimaryDisplay } from './windows/avatarWindow'
 import { showPanelWindow } from './windows/panelWindow'
 import { createTray, destroyTray } from './tray'
 import { registerIpcHandlers } from './ipc'
@@ -28,6 +28,7 @@ app.whenReady().then(() => {
   createTray({
     onShowTheo: () => {
       // Trigger a test reminder animation
+      moveToActiveDisplay()
       const win = getAvatarWindow()
       if (win && !win.isDestroyed()) {
         win.webContents.send(IPC.REMINDER_FIRE, {
@@ -58,6 +59,7 @@ app.whenReady().then(() => {
   // Dev shortcut: Cmd+Shift+T triggers test reminder
   const registered = globalShortcut.register('CommandOrControl+Shift+T', () => {
     console.log('Theo: Test shortcut triggered!')
+    moveToActiveDisplay()
     const win = getAvatarWindow()
     if (win && !win.isDestroyed()) {
       win.webContents.send(IPC.REMINDER_FIRE, {
@@ -81,6 +83,12 @@ app.whenReady().then(() => {
     showPanelWindow('tasks')
   })
   console.log(`Theo: Cmd+Shift+N registered: ${captureRegistered}`)
+
+  // Multi-monitor: move to primary display if a monitor is disconnected
+  screen.on('display-removed', () => {
+    console.log('Theo: Display removed, moving to primary')
+    moveToPrimaryDisplay()
+  })
 
   // Start the reminder engine
   startEngine()
