@@ -12,7 +12,7 @@ A pixel-art desktop avatar assistant for macOS and Windows. Theo is a small kid 
 4. He waves goodbye and walks back off-screen
 5. If you're actively typing, he uses **gentle mode** (faster, less intrusive animations)
 
-<p align="right">
+<p align="left">
   <img src="assets/demo.png" alt="Theo hydration reminder demo" width="480" />
 </p>
 
