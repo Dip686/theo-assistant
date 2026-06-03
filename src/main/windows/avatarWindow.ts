@@ -82,6 +82,42 @@ export function createAvatarWindow(): BrowserWindow {
   return avatarWindow
 }
 
+/**
+ * Move the avatar window to the bottom-right of whichever display
+ * the user's cursor is currently on. Called before firing a reminder
+ * so Theo appears on the active monitor.
+ */
+export function moveToActiveDisplay(): void {
+  if (!avatarWindow || avatarWindow.isDestroyed()) return
+
+  const cursor = screen.getCursorScreenPoint()
+  const activeDisplay = screen.getDisplayNearestPoint(cursor)
+  const { x, y } = computeWindowPosition(
+    process.platform,
+    activeDisplay.size,
+    activeDisplay.workArea
+  )
+
+  avatarWindow.setPosition(x, y)
+}
+
+/**
+ * Move the avatar window back to the primary display.
+ * Used when a monitor is disconnected.
+ */
+export function moveToPrimaryDisplay(): void {
+  if (!avatarWindow || avatarWindow.isDestroyed()) return
+
+  const primary = screen.getPrimaryDisplay()
+  const { x, y } = computeWindowPosition(
+    process.platform,
+    primary.size,
+    primary.workArea
+  )
+
+  avatarWindow.setPosition(x, y)
+}
+
 export function setAvatarInteractive(interactive: boolean): void {
   if (!avatarWindow || avatarWindow.isDestroyed()) return
 

@@ -1,6 +1,7 @@
 import { BrowserWindow, powerMonitor } from 'electron'
 import { Reminder, IPC, ReminderLogEntry } from '../../shared/types'
 import { getReminders, getSettings, addLogEntry } from './store'
+import { moveToActiveDisplay } from '../windows/avatarWindow'
 
 interface TimerEntry {
   reminderId: string
@@ -60,6 +61,9 @@ function fireReminder(reminder: Reminder): void {
   // Detect gentle mode: if idle time < 2 seconds, user is actively typing
   const idleTime = powerMonitor.getSystemIdleTime()
   const gentleMode = idleTime < 2
+
+  // Move Theo to the monitor the user is actively using
+  moveToActiveDisplay()
 
   currentReminder = reminder
   avatarWindow.webContents.send(IPC.REMINDER_FIRE, {
