@@ -6,15 +6,15 @@ A pixel-art desktop avatar assistant for macOS and Windows. Theo is a small kid 
 
 ## How It Works
 
-<p align="center">
-  <img src="assets/demo.png" alt="Theo hydration reminder demo" width="480" />
-</p>
-
 1. Theo stays hidden — no dock icon, just a system tray icon
 2. When a reminder fires, he peeks from the screen edge, walks in with a bouncy pixel-art animation, and shows a speech bubble
 3. You can dismiss ("OK") or snooze (5/10 min)
 4. He waves goodbye and walks back off-screen
 5. If you're actively typing, he uses **gentle mode** (faster, less intrusive animations)
+
+<p align="right">
+  <img src="assets/demo.png" alt="Theo hydration reminder demo" width="480" />
+</p>
 
 ## Features
 
