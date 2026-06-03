@@ -2,6 +2,11 @@ import React, { useEffect, useState, useCallback } from 'react'
 import { SHIRT_PRESETS } from '../sprites/colors'
 import { theme, baseBtn } from './theme'
 
+interface CalendarSettings {
+  enabled: boolean
+  selectedCalendars: string[]
+}
+
 interface Settings {
   soundEnabled: boolean
   volume: number
@@ -14,20 +19,39 @@ interface Settings {
   animationSpeed: 'slow' | 'normal' | 'fast'
   respectDND: boolean
   startOnLogin: boolean
+  calendar: CalendarSettings
+}
+
+interface CalendarStatus {
+  connected: boolean
+  email?: string
+  inMeeting: boolean
+  meetingEndTime?: string
 }
 
 const theo = (window as unknown as { theo: {
   getSettings: () => Promise<Settings>
   saveSettings: (s: Settings) => Promise<Settings>
+  connectCalendar: () => Promise<string>
+  disconnectCalendar: () => Promise<void>
+  getCalendarStatus: () => Promise<CalendarStatus>
 } }).theo
 
 export function SettingsPanel() {
   const [settings, setSettings] = useState<Settings | null>(null)
   const [saved, setSaved] = useState(false)
+  const [calStatus, setCalStatus] = useState<CalendarStatus>({ connected: false, inMeeting: false })
+  const [calConnecting, setCalConnecting] = useState(false)
 
   const load = useCallback(async () => {
     const s = await theo.getSettings()
+    // Migrate: add calendar settings if missing
+    if (!s.calendar) s.calendar = { enabled: false, selectedCalendars: [] }
     setSettings(s)
+    try {
+      const status = await theo.getCalendarStatus()
+      setCalStatus(status)
+    } catch { /* not connected */ }
   }, [])
 
   useEffect(() => { load() }, [load])
@@ -154,6 +178,92 @@ export function SettingsPanel() {
           <span>Start on login</span>
           <ToggleSwitch checked={settings.startOnLogin} onChange={(v) => update({ startOnLogin: v })} />
         </div>
+      </section>
+
+      {/* Google Calendar */}
+      <section style={sectionStyle}>
+        <div style={{ ...rowStyle, marginBottom: 6 }}>
+          <span style={{ fontWeight: 600 }}>Google Calendar</span>
+          {calStatus.connected ? (
+            <span style={{ fontSize: 9, color: theme.success }}>Connected</span>
+          ) : (
+            <span style={{ fontSize: 9, color: theme.textDim }}>Not connected</span>
+          )}
+        </div>
+
+        {calStatus.connected ? (
+          <>
+            <div style={{ fontSize: 11, color: theme.textMuted, marginBottom: 8 }}>
+              {calStatus.email}
+              {calStatus.inMeeting && (
+                <span style={{
+                  marginLeft: 8, fontSize: 9, padding: '2px 6px',
+                  background: theme.danger + '22', color: theme.danger,
+                  borderRadius: 4,
+                }}>
+                  In meeting
+                </span>
+              )}
+            </div>
+            <div style={rowStyle}>
+              <span>Meeting reminders</span>
+              <ToggleSwitch
+                checked={settings.calendar.enabled}
+                onChange={(v) => update({
+                  calendar: { ...settings.calendar, enabled: v }
+                })}
+              />
+            </div>
+            {settings.calendar.enabled && (
+              <div style={{ fontSize: 10, color: theme.textDim, marginTop: 4 }}>
+                Theo will remind you 10min and 1min before meetings.
+                Other reminders are suppressed during meetings.
+              </div>
+            )}
+            <button
+              onClick={async () => {
+                await theo.disconnectCalendar()
+                setCalStatus({ connected: false, inMeeting: false })
+                update({ calendar: { enabled: false, selectedCalendars: [] } })
+              }}
+              style={{
+                ...baseBtn, marginTop: 8,
+                background: theme.danger + '22', color: theme.danger,
+                fontSize: 10, padding: '4px 10px',
+              }}
+            >
+              Disconnect
+            </button>
+          </>
+        ) : (
+          <>
+            <div style={{ fontSize: 11, color: theme.textDim, marginBottom: 8 }}>
+              Connect your Google Calendar to get meeting reminders and auto-suppress notifications during meetings.
+            </div>
+            <button
+              onClick={async () => {
+                setCalConnecting(true)
+                try {
+                  const email = await theo.connectCalendar()
+                  setCalStatus({ connected: true, email, inMeeting: false })
+                  update({ calendar: { ...settings.calendar, enabled: true } })
+                } catch (err) {
+                  console.error('Calendar connect failed:', err)
+                } finally {
+                  setCalConnecting(false)
+                }
+              }}
+              disabled={calConnecting}
+              style={{
+                ...baseBtn,
+                background: calConnecting ? theme.surface : theme.primary,
+                color: '#fff', fontSize: 11,
+              }}
+            >
+              {calConnecting ? 'Connecting...' : 'Connect Google Calendar'}
+            </button>
+          </>
+        )}
       </section>
 
       <button

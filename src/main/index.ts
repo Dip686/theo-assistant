@@ -4,7 +4,9 @@ import { showPanelWindow } from './windows/panelWindow'
 import { createTray, destroyTray } from './tray'
 import { registerIpcHandlers } from './ipc'
 import { startEngine, stopEngine, setAvatarWindow } from './reminder/engine'
-import { loadData } from './reminder/store'
+import { loadData, getSettings } from './reminder/store'
+import { setCalendarAvatarWindow, startCalendarSync, stopCalendarSync } from './calendar/calendarService'
+import { isConnected } from './calendar/googleAuth'
 import { IPC } from '../shared/types'
 
 // Hide dock icon — Theo lives in the tray
@@ -93,6 +95,13 @@ app.whenReady().then(() => {
   // Start the reminder engine
   startEngine()
 
+  // Start calendar sync if connected and enabled
+  setCalendarAvatarWindow(avatarWin)
+  const settings = getSettings()
+  if (isConnected() && settings.calendar?.enabled) {
+    startCalendarSync()
+  }
+
   console.log('Theo is running! 🧑')
 })
 
@@ -103,5 +112,6 @@ app.on('window-all-closed', () => {
 app.on('will-quit', () => {
   destroyTray()
   stopEngine()
+  stopCalendarSync()
   globalShortcut.unregisterAll()
 })

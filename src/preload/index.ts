@@ -45,6 +45,13 @@ contextBridge.exposeInMainWorld('theo', {
   addTaskNote: (taskId: string, text: string) =>
     ipcRenderer.invoke(IPC.TASKS_ADD_NOTE, { taskId, text }),
 
+  // Calendar
+  connectCalendar: () => ipcRenderer.invoke(IPC.CALENDAR_CONNECT),
+  disconnectCalendar: () => ipcRenderer.invoke(IPC.CALENDAR_DISCONNECT),
+  getCalendarStatus: () => ipcRenderer.invoke(IPC.CALENDAR_STATUS),
+  getCalendarEventsToday: () => ipcRenderer.invoke(IPC.CALENDAR_EVENTS_TODAY),
+  listCalendars: () => ipcRenderer.invoke(IPC.CALENDAR_LIST),
+
   // Panel navigation events (main -> renderer)
   onOpenTab: (callback: (tab: string) => void) => {
     const handler = (_event: unknown, tab: string) => callback(tab)

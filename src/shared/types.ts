@@ -13,6 +13,11 @@ export interface Reminder {
   createdAt: string
 }
 
+export interface CalendarSettings {
+  enabled: boolean
+  selectedCalendars: string[] // calendar IDs to watch (empty = all)
+}
+
 export interface Settings {
   soundEnabled: boolean
   volume: number // 0-1
@@ -25,6 +30,24 @@ export interface Settings {
   animationSpeed: 'slow' | 'normal' | 'fast'
   respectDND: boolean
   startOnLogin: boolean
+  calendar: CalendarSettings
+}
+
+export interface CalendarEvent {
+  id: string
+  summary: string
+  start: string   // ISO datetime
+  end: string     // ISO datetime
+  status: string  // 'confirmed' | 'tentative' | 'cancelled'
+  allDay: boolean
+}
+
+export interface CalendarStatus {
+  connected: boolean
+  email?: string
+  nextSync?: string
+  inMeeting: boolean
+  meetingEndTime?: string
 }
 
 export interface ReminderLogEntry {
@@ -85,6 +108,13 @@ export const IPC = {
 
   // Panel navigation
   PANEL_OPEN_TAB: 'panel:open-tab',
+
+  // Calendar
+  CALENDAR_CONNECT: 'calendar:connect',
+  CALENDAR_DISCONNECT: 'calendar:disconnect',
+  CALENDAR_STATUS: 'calendar:status',
+  CALENDAR_EVENTS_TODAY: 'calendar:events-today',
+  CALENDAR_LIST: 'calendar:list',
 } as const
 
 // Default reminders that ship with the app
@@ -131,4 +161,8 @@ export const DEFAULT_SETTINGS: Settings = {
   animationSpeed: 'normal',
   respectDND: true,
   startOnLogin: false,
+  calendar: {
+    enabled: false,
+    selectedCalendars: [],
+  },
 }
