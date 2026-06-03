@@ -1,20 +1,38 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { ReminderList } from './ReminderList'
 import { SettingsPanel } from './SettingsPanel'
 import { ActivityLog } from './ActivityLog'
+import { TasksPanel } from './TasksPanel'
 import { theme } from './theme'
 
-type Tab = 'reminders' | 'settings' | 'log'
+type Tab = 'tasks' | 'reminders' | 'settings' | 'log'
+
+const TAB_LABELS: Record<Tab, string> = {
+  tasks: 'Tasks',
+  reminders: 'Reminders',
+  settings: 'Settings',
+  log: 'Log',
+}
 
 export function PanelApp() {
-  const [activeTab, setActiveTab] = useState<Tab>('reminders')
+  const [activeTab, setActiveTab] = useState<Tab>('tasks')
+
+  // Listen for tab-switch commands from main process (e.g., Cmd+Shift+N)
+  useEffect(() => {
+    const theo = (window as unknown as { theo: { onOpenTab?: (cb: (tab: string) => void) => () => void } }).theo
+    if (theo?.onOpenTab) {
+      return theo.onOpenTab((tab) => {
+        if (tab in TAB_LABELS) setActiveTab(tab as Tab)
+      })
+    }
+  }, [])
 
   return (
     <div style={containerStyle}>
       <header style={headerStyle}>
         <span style={logoStyle}>Theo</span>
         <nav style={navStyle}>
-          {(['reminders', 'settings', 'log'] as Tab[]).map((tab) => (
+          {(Object.keys(TAB_LABELS) as Tab[]).map((tab) => (
             <button
               key={tab}
               style={{
@@ -23,13 +41,14 @@ export function PanelApp() {
               }}
               onClick={() => setActiveTab(tab)}
             >
-              {tab === 'reminders' ? 'Reminders' : tab === 'settings' ? 'Settings' : 'Log'}
+              {TAB_LABELS[tab]}
             </button>
           ))}
         </nav>
       </header>
 
       <main style={mainStyle}>
+        {activeTab === 'tasks' && <TasksPanel />}
         {activeTab === 'reminders' && <ReminderList />}
         {activeTab === 'settings' && <SettingsPanel />}
         {activeTab === 'log' && <ActivityLog />}

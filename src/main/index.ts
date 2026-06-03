@@ -41,6 +41,7 @@ app.whenReady().then(() => {
       }
     },
     onOpenPanel: () => showPanelWindow(),
+    onQuickCapture: () => showPanelWindow('tasks'),
     onQuit: () => app.quit(),
   })
 
@@ -73,6 +74,13 @@ app.whenReady().then(() => {
     }
   })
   console.log(`Theo: Cmd+Shift+T registered: ${registered}`)
+
+  // Quick Capture shortcut: Cmd+Shift+N opens panel on Tasks tab
+  const captureRegistered = globalShortcut.register('CommandOrControl+Shift+N', () => {
+    console.log('Theo: Quick Capture shortcut triggered!')
+    showPanelWindow('tasks')
+  })
+  console.log(`Theo: Cmd+Shift+N registered: ${captureRegistered}`)
 
   // Start the reminder engine
   startEngine()

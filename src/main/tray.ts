@@ -59,6 +59,7 @@ function createTrayIcon(): nativeImage {
 export function createTray(callbacks: {
   onShowTheo: () => void
   onOpenPanel: () => void
+  onQuickCapture: () => void
   onQuit: () => void
 }): Tray {
   const icon = createTrayIcon()
@@ -70,6 +71,11 @@ export function createTray(callbacks: {
     {
       label: 'Show Theo',
       click: callbacks.onShowTheo,
+    },
+    {
+      label: 'Quick Capture',
+      accelerator: 'CommandOrControl+Shift+N',
+      click: callbacks.onQuickCapture,
     },
     {
       label: 'Task Panel...',

@@ -1,10 +1,14 @@
 # Theo
 
-A pixel-art desktop avatar assistant for macOS. Theo is a small kid character who lives in your system tray and pops up from the bottom-right corner of your screen to remind you of tasks — screen breaks, hydration, stretches, posture checks, and anything else you configure.
+A pixel-art desktop avatar assistant for macOS and Windows. Theo is a small kid character who lives in your system tray and pops up from the bottom-right corner of your screen to remind you of tasks — screen breaks, hydration, stretches, posture checks, and anything else you configure.
 
-![Electron](https://img.shields.io/badge/Electron-35-blue) ![React](https://img.shields.io/badge/React-19-61DAFB) ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6) ![macOS](https://img.shields.io/badge/macOS-only-000000)
+![Electron](https://img.shields.io/badge/Electron-35-blue) ![React](https://img.shields.io/badge/React-19-61DAFB) ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6) ![macOS](https://img.shields.io/badge/macOS-supported-000000) ![Windows](https://img.shields.io/badge/Windows-supported-0078D6)
 
 ## How It Works
+
+<p align="center">
+  <img src="assets/demo.png" alt="Theo hydration reminder demo" width="480" />
+</p>
 
 1. Theo stays hidden — no dock icon, just a system tray icon
 2. When a reminder fires, he peeks from the screen edge, walks in with a bouncy pixel-art animation, and shows a speech bubble
@@ -12,18 +16,34 @@ A pixel-art desktop avatar assistant for macOS. Theo is a small kid character wh
 4. He waves goodbye and walks back off-screen
 5. If you're actively typing, he uses **gentle mode** (faster, less intrusive animations)
 
+## Quick Capture Todos
+
+Capture ideas and tasks without leaving your workflow. Press **Cmd+Shift+N** (macOS) / **Ctrl+Shift+N** (Windows) to open the task panel instantly.
+
+<p align="center">
+  <img src="assets/tasks-board.png" alt="Tasks board view with accordions" width="340" />
+</p>
+
+- **Chat view** — Type a task, press Enter. Each task is a card you can expand to add follow-up notes and progress updates.
+- **Board view** — Vertical accordion sections: **Todo**, **In Progress**, **Done**, and **Deferred**. Collapse/expand each section. Move tasks between sections with arrow buttons.
+- **Notes thread** — Click any task to expand it. Add timestamped notes to track progress over time.
+- **Status cycling** — Click the status chip on a task to cycle: Todo → In Progress → Done → Deferred → Todo.
+- **Persisted locally** — All tasks saved to `~/.theo/data.json`. No accounts, no cloud.
+
 ## Features
 
 - **Pixel art avatar** — Hand-drawn sprite with walk cycle, peek, wave, and front-facing poses
 - **Reminder engine** — Interval-based (every N minutes) or scheduled (specific time) reminders
+- **Quick capture** — Chat-style task input with kanban board view (Cmd+Shift+N)
 - **Task panel** — Full UI to create, edit, delete, and toggle reminders
 - **Settings** — Sound on/off, volume, outfit color (6 presets), animation speed, quiet hours
-- **System awareness** — Respects macOS Do Not Disturb, detects idle/sleep/lock, gentle mode when typing
+- **System awareness** — Respects Do Not Disturb, detects idle/sleep/lock, gentle mode when typing
 - **Snooze & quiet hours** — Snooze individual reminders, set global quiet hours window
 - **Sound effects** — Doot doot notification sound (triangle wave synthesis via Web Audio API)
 - **Activity log** — History of all fired reminders with timestamps and actions taken
 - **Always-on-top overlay** — Transparent, frameless window at `screen-saver` level (works over fullscreen apps)
 - **Click-through** — Window is invisible to mouse when Theo is hidden; interactive only during reminders
+- **Cross-platform** — macOS (.dmg) and Windows (.exe) builds via GitHub Actions
 
 ## Default Reminders
 
@@ -38,7 +58,6 @@ A pixel-art desktop avatar assistant for macOS. Theo is a small kid character wh
 
 ### Prerequisites
 
-- macOS
 - Node.js 18+
 - npm
 
@@ -56,20 +75,53 @@ npm install
 npm run dev
 ```
 
-### Dev Shortcuts
+### Keyboard Shortcuts
 
-- **Cmd+Shift+T** — Trigger a test reminder animation
-- **System tray > Show Theo** — Trigger test reminder
-- **System tray > Task Panel** — Open the configuration panel
+| Shortcut | Action |
+|----------|--------|
+| `Cmd+Shift+T` / `Ctrl+Shift+T` | Trigger a test reminder animation |
+| `Cmd+Shift+N` / `Ctrl+Shift+N` | Open Quick Capture (Tasks tab) |
+
+### System Tray
+
+- **Show Theo** — Trigger test reminder
+- **Quick Capture** — Open Tasks tab directly
+- **Task Panel** — Open the full configuration panel
+- **Quit Theo** — Exit the app
 
 ### Build
 
 ```bash
-# Production build
+# Production build (compile only)
 npm run build
 
-# Package as .app
-npm run package
+# Run tests
+npm test
+
+# Package for macOS
+npm run package        # .app + .dmg + .zip
+npm run package:dmg    # .dmg only
+npm run package:zip    # .zip only
+```
+
+Windows builds are generated automatically via GitHub Actions when a new release is created.
+
+## CI/CD
+
+GitHub Actions automatically builds and uploads artifacts for both macOS and Windows when a release is created. See `.github/workflows/release.yml`.
+
+| Platform | Artifacts |
+|----------|-----------|
+| macOS | `.dmg`, `.zip` |
+| Windows | `.exe` (NSIS installer), `.zip` |
+
+### Installing from GitHub Releases
+
+**Windows:** Download and run the `.exe` installer.
+
+**macOS:** The app is not code-signed. After downloading the `.dmg`, remove the quarantine flag before opening:
+```bash
+xattr -cr ~/Downloads/Theo-*.dmg
 ```
 
 ## Tech Stack
@@ -83,6 +135,8 @@ npm run package
 | Sound | Web Audio API (synthesized) |
 | Storage | JSON file at `~/.theo/data.json` |
 | Packaging | electron-builder |
+| CI/CD | GitHub Actions |
+| Tests | Vitest |
 
 ## Project Structure
 
@@ -94,9 +148,9 @@ src/
     tray.ts              # System tray with programmatic icon
     reminder/
       engine.ts          # Timer scheduler, idle detection, gentle mode
-      store.ts           # JSON file CRUD (reminders, settings, log)
+      store.ts           # JSON file CRUD (reminders, settings, tasks, log)
     windows/
-      avatarWindow.ts    # Transparent overlay window
+      avatarWindow.ts    # Transparent overlay window (platform-aware positioning)
       panelWindow.ts     # Task panel window
   preload/
     index.ts             # contextBridge API
@@ -108,18 +162,24 @@ src/
       animationController.ts  # State machine (hidden/peek/walk/talk/wave)
       sound.ts           # Doot doot notification sound
     panel/
-      PanelApp.tsx       # Tabbed panel (Reminders/Settings/Log)
+      PanelApp.tsx       # Tabbed panel (Tasks/Reminders/Settings/Log)
+      TasksPanel.tsx     # Quick capture chat + kanban board
       ReminderList.tsx   # Reminder CRUD list
       ReminderForm.tsx   # Create/edit reminder form
       SettingsPanel.tsx  # Settings UI
       ActivityLog.tsx    # Reminder history
+      theme.ts           # UI theme constants
     sprites/
+      colors.ts          # Color palette constants
       drawTheo.ts        # Sprite drawing functions (front/walk/peek/wave)
       primitives.ts      # Pixel drawing helpers + outline
-      colors.ts          # Color palette + shirt presets
       walkOffsets.ts     # Walk cycle frame data
   shared/
     types.ts             # Shared interfaces, IPC constants, defaults
+tests/
+  avatarWindow.test.ts       # Window positioning (Mac/Windows/multi-monitor)
+  animationController.test.ts # Animation state machine + timing
+  avatarSwitcher.test.ts     # Avatar config + palette validation
 ```
 
 ## License

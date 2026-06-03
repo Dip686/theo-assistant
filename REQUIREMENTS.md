@@ -2,7 +2,7 @@
 
 ## Overview
 
-Theo is a small, smart pixel-art kid avatar that lives on your macOS desktop. He stays hidden until it's time to nudge you — then he peeks in from the bottom-right corner with a playful animation and delivers a reminder. Think of him as a tiny, opinionated desk buddy who keeps you on track.
+Theo is a small, smart pixel-art kid avatar that lives on your desktop. He stays hidden until it's time to nudge you — then he peeks in from the bottom-right corner with a playful animation and delivers a reminder. Think of him as a tiny, opinionated desk buddy who keeps you on track.
 
 ---
 
@@ -10,11 +10,15 @@ Theo is a small, smart pixel-art kid avatar that lives on your macOS desktop. He
 
 | Aspect       | Choice                        |
 |-------------|-------------------------------|
-| Platform    | macOS only (v1)               |
-| Framework   | Electron                      |
-| UI          | React + TypeScript            |
-| Animation   | Pixel art sprites (sprite sheets) |
+| Platform    | macOS + Windows               |
+| Framework   | Electron 35                   |
+| UI          | React 19 + TypeScript 5       |
+| Build       | electron-vite + Vite 6        |
+| Animation   | Pixel art sprites (Canvas 2D, 64x64 at 3x scale) |
 | Window      | Frameless, transparent, always-on-top, click-through when idle |
+| Packaging   | electron-builder (.dmg/.zip for Mac, .exe/NSIS for Windows) |
+| CI/CD       | GitHub Actions (auto-build on release) |
+| Tests       | Vitest                        |
 
 ---
 
@@ -71,7 +75,97 @@ A compact floating panel with:
 
 ---
 
-## Phase 2 — Smart Assistant (Future)
+## Phase 2 — Productivity Features
+
+### 2A. Quick Capture Todos (Chat-style task manager)
+
+**Problem:** You have an idea or task mid-work but don't want to switch to a separate app. You just want to jot it down quickly and come back to it later.
+
+**Shortcut:** `Cmd+Shift+N` (macOS) / `Ctrl+Shift+N` (Windows)
+
+#### Chat Interface
+- Opens a slim chat-style panel with an input field at the bottom
+- Type your idea/task → press Enter → saved instantly as a new todo
+- Each task becomes a chat-style card showing title + timestamp
+- Click any task card to expand → add follow-up notes, progress updates, or context
+- Each note is timestamped, creating a thread-like history per task
+
+#### Task Board View
+- A second tab with kanban-style columns: **Todo | In Progress | Done**
+- Click status chips or drag to move tasks between columns
+- Tasks are sorted by most recently updated within each column
+- Filter/search across all tasks
+
+#### Data Model
+```
+Task {
+  id: string
+  title: string
+  status: 'todo' | 'in_progress' | 'done'
+  notes: [{ text: string, createdAt: string }]
+  createdAt: string
+  updatedAt: string
+}
+```
+
+#### Storage
+- Tasks persist in `~/.theo/data.json` alongside reminders and settings
+- Tray icon shows badge with pending todo count (todo + in_progress)
+
+---
+
+### 2B. Meeting-Aware Theo (Google Calendar integration)
+
+**Problem:** Theo interrupts during meetings. And you forget meetings are starting until the last second.
+
+#### Calendar Setup
+- One-time Google OAuth2 login (opens browser window, user clicks "Allow")
+- Scope: `calendar.readonly` — Theo only reads, never modifies calendar
+- Refresh token stored locally in `~/.theo/google-auth.json`
+- Settings panel: toggle integration on/off, choose which calendars to watch
+
+#### Meeting Reminders
+- **On app start + every 5 minutes:** Fetch today's events from Google Calendar API
+- **10 minutes before meeting:** Theo walks in → "📅 {Meeting name} in 10 minutes"
+- **1 minute before meeting:** Theo walks in → "📅 {Meeting name} starts in 1 minute!"
+- **Before each notification:** Re-fetch the specific event from the API to confirm it still exists
+  - If the meeting was **cancelled or rescheduled** → skip the notification silently
+  - If the meeting **time changed** → adjust the notification timers accordingly
+
+#### Auto-Suppress During Meetings
+- During active meeting time windows (from calendar), Theo auto-suppresses all other reminders (screen break, hydration, stretch, etc.)
+- Suppressed reminders are not lost — they fire after the meeting ends
+- Visual indicator in tray: "🔇 In meeting until 3:00 PM"
+
+#### Edge Cases
+- Back-to-back meetings: suppress reminders for the entire block, fire once after last meeting ends
+- All-day events: ignored (not treated as meetings)
+- Declined events: ignored (only show accepted/tentative events)
+- Multi-calendar: user can select which calendars to watch (e.g., work calendar only, skip personal)
+
+---
+
+### 2C. Multi-Monitor Awareness
+
+**Problem:** Theo always appears on the primary display, even when you're working on a different monitor.
+
+#### Behavior
+- On reminder fire: detect which monitor the user's cursor is on → position Theo's window on **that display's** bottom-right corner
+- Use `screen.getDisplayNearestPoint(cursorPosition)` instead of `screen.getPrimaryDisplay()`
+- Poll cursor position only when a reminder is about to fire (not continuously — lightweight)
+
+#### Display Events
+- Listen for `screen.on('display-added')` and `screen.on('display-removed')` 
+- On display disconnect: if Theo's window was on the removed display, move to primary
+- On display connect: no action needed (next reminder will detect cursor position)
+
+#### Platform-Specific Positioning
+- **macOS:** Use `display.size` for fullscreen overlay support (existing behavior)
+- **Windows:** Use `display.workArea` to avoid taskbar on whichever monitor it's on
+
+---
+
+## Phase 3 — Smart Assistant (Future)
 
 ### Markdown File Watcher
 
@@ -121,37 +215,43 @@ A compact floating panel with:
 ## Technical Architecture
 
 ```
-┌─────────────────────────────────────┐
-│           Electron Main Process     │
-│                                     │
-│  ┌──────────┐   ┌────────────────┐  │
-│  │ Scheduler │   │ System Events  │  │
-│  │ (timers,  │   │ (wake/sleep,   │  │
-│  │  cron)    │   │  lock/unlock)  │  │
-│  └─────┬─────┘   └──────┬────────┘  │
-│        │                │            │
-│        ▼                ▼            │
-│  ┌──────────────────────────────┐   │
-│  │     Reminder Engine          │   │
-│  │  (decides when to fire)      │   │
-│  └──────────────┬───────────────┘   │
-│                 │                    │
-└─────────────────┼────────────────────┘
-                  │ IPC
-┌─────────────────┼────────────────────┐
-│           Renderer Process           │
-│                 ▼                    │
-│  ┌──────────────────────────────┐   │
-│  │    Avatar Component          │   │
-│  │  (sprite animation engine)   │   │
-│  └──────────────────────────────┘   │
-│  ┌──────────────────────────────┐   │
-│  │    Task Panel Component      │   │
-│  │  (reminder CRUD, settings)   │   │
-│  └──────────────────────────────┘   │
-└──────────────────────────────────────┘
+┌──────────────────────────────────────────────┐
+│              Electron Main Process            │
+│                                              │
+│  ┌──────────┐  ┌──────────────┐  ┌────────┐ │
+│  │ Scheduler │  │ System Events│  │ Google │ │
+│  │ (timers)  │  │ (wake/sleep, │  │Calendar│ │
+│  │           │  │  lock/unlock)│  │  API   │ │
+│  └─────┬─────┘  └──────┬──────┘  └───┬────┘ │
+│        │               │             │       │
+│        ▼               ▼             ▼       │
+│  ┌───────────────────────────────────────┐   │
+│  │          Reminder Engine              │   │
+│  │  (decides when to fire, suppresses    │   │
+│  │   during meetings, multi-monitor)     │   │
+│  └──────────────────┬────────────────────┘   │
+│                     │                        │
+└─────────────────────┼────────────────────────┘
+                      │ IPC
+┌─────────────────────┼────────────────────────┐
+│            Renderer Process                   │
+│                     ▼                        │
+│  ┌──────────────────────────────────────┐    │
+│  │    Avatar Component                  │    │
+│  │  (sprite animation engine)           │    │
+│  └──────────────────────────────────────┘    │
+│  ┌──────────────────────────────────────┐    │
+│  │    Task Panel Component              │    │
+│  │  (reminder CRUD, settings, calendar) │    │
+│  └──────────────────────────────────────┘    │
+│  ┌──────────────────────────────────────┐    │
+│  │    Quick Capture Panel               │    │
+│  │  (chat input, task board / kanban)   │    │
+│  └──────────────────────────────────────┘    │
+└──────────────────────────────────────────────┘
 
-Data: JSON file for reminders + settings (~/.theo/data.json)
+Data: ~/.theo/data.json       (reminders, settings, tasks, log)
+Auth: ~/.theo/google-auth.json (Google Calendar OAuth tokens)
 ```
 
 ---
@@ -169,13 +269,12 @@ Data: JSON file for reminders + settings (~/.theo/data.json)
 
 ---
 
-## Out of Scope (v1)
+## Out of Scope
 
-- Windows / Linux support
+- Linux support
 - Voice interaction
 - Cloud sync
 - Mobile companion app
-- Multi-monitor support (v1 picks primary display)
 
 ---
 
@@ -189,3 +288,17 @@ Data: JSON file for reminders + settings (~/.theo/data.json)
 | Active typing | Gentle mode — smaller animation, faster auto-dismiss (~5s) |
 | macOS Focus/DND | Theo respects it — goes silent, queues reminders |
 | Data format | JSON file (`~/.theo/data.json`) |
+| Windows support | Added in v1.2.0 — NSIS installer + zip via GitHub Actions |
+| Multi-monitor | Phase 2C — cursor-based display detection on reminder fire |
+| Calendar integration | Google Calendar read-only OAuth, with pre-notify check for cancellations |
+| Task capture | Chat-style quick input + kanban board, stored locally |
+
+---
+
+## Build Order (Phase 2)
+
+| Priority | Feature | Rationale |
+|----------|---------|-----------|
+| 1 | Multi-Monitor (2C) | Smallest scope, single file change, improves existing UX |
+| 2 | Quick Capture (2A) | Self-contained UI + data model, no external dependencies |
+| 3 | Meeting-Aware (2B) | Needs OAuth + Google API, most complex but highest impact |

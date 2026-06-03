@@ -1,5 +1,5 @@
 import { ipcMain } from 'electron'
-import { IPC, Reminder, Settings } from '../shared/types'
+import { IPC, Reminder, Settings, Task } from '../shared/types'
 import {
   getReminders,
   createReminder,
@@ -8,6 +8,11 @@ import {
   getSettings,
   saveSettings,
   getLog,
+  getTasks,
+  createTask,
+  updateTask,
+  deleteTask,
+  addTaskNote,
 } from './reminder/store'
 import { snoozeReminder, dismissReminder, restartEngine } from './reminder/engine'
 
@@ -63,5 +68,24 @@ export function registerIpcHandlers(callbacks: {
 
   ipcMain.on(IPC.OPEN_PANEL, () => {
     callbacks.onOpenPanel()
+  })
+
+  // Task CRUD
+  ipcMain.handle(IPC.TASKS_LIST, () => getTasks())
+
+  ipcMain.handle(IPC.TASKS_CREATE, (_event, title: string) => {
+    return createTask(title)
+  })
+
+  ipcMain.handle(IPC.TASKS_UPDATE, (_event, data: Task) => {
+    return updateTask(data)
+  })
+
+  ipcMain.handle(IPC.TASKS_DELETE, (_event, id: string) => {
+    deleteTask(id)
+  })
+
+  ipcMain.handle(IPC.TASKS_ADD_NOTE, (_event, { taskId, text }: { taskId: string; text: string }) => {
+    return addTaskNote(taskId, text)
   })
 }

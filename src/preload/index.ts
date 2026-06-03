@@ -36,6 +36,21 @@ contextBridge.exposeInMainWorld('theo', {
 
   // Log
   getLog: () => ipcRenderer.invoke(IPC.LOG_GET),
+
+  // Tasks
+  listTasks: () => ipcRenderer.invoke(IPC.TASKS_LIST),
+  createTask: (title: string) => ipcRenderer.invoke(IPC.TASKS_CREATE, title),
+  updateTask: (data: unknown) => ipcRenderer.invoke(IPC.TASKS_UPDATE, data),
+  deleteTask: (id: string) => ipcRenderer.invoke(IPC.TASKS_DELETE, id),
+  addTaskNote: (taskId: string, text: string) =>
+    ipcRenderer.invoke(IPC.TASKS_ADD_NOTE, { taskId, text }),
+
+  // Panel navigation events (main -> renderer)
+  onOpenTab: (callback: (tab: string) => void) => {
+    const handler = (_event: unknown, tab: string) => callback(tab)
+    ipcRenderer.on(IPC.PANEL_OPEN_TAB, handler)
+    return () => ipcRenderer.removeListener(IPC.PANEL_OPEN_TAB, handler)
+  },
 })
 
 // Type declaration for the renderer
