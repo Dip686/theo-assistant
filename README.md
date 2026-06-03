@@ -29,7 +29,6 @@ Capture ideas and tasks without leaving your workflow. Press **Cmd+Shift+N** (ma
 - **Notes thread** — Click any task to expand it. Add timestamped notes to track progress over time.
 - **Status cycling** — Click the status chip on a task to cycle: Todo → In Progress → Done → Deferred → Todo.
 - **Persisted locally** — All tasks saved to `~/.theo/data.json`. No accounts, no cloud.
-
 ## Features
 
 - **Pixel art avatar** — Hand-drawn sprite with walk cycle, peek, wave, and front-facing poses

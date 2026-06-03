@@ -1,6 +1,6 @@
 {
   "name": "theo",
-  "version": "1.2.0",
+  "version": "2.0.3",
   "description": "Desktop avatar assistant that reminds you to take breaks",
   "author": "Dip686",
   "main": "./out/main/index.js",
@@ -10,7 +10,9 @@
     "preview": "electron-vite preview",
     "package": "electron-vite build && electron-builder --mac",
     "package:dmg": "electron-vite build && electron-builder --mac dmg",
-    "package:zip": "electron-vite build && electron-builder --mac zip"
+    "package:zip": "electron-vite build && electron-builder --mac zip",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "build": {
     "appId": "com.dip686.theo",
@@ -23,18 +25,32 @@
     ],
     "mac": {
       "category": "public.app-category.productivity",
-      "target": ["dmg", "zip"],
+      "target": [
+        "dmg",
+        "zip"
+      ],
       "icon": "build/icon.icns"
     },
     "dmg": {
       "title": "Theo",
       "contents": [
-        { "x": 130, "y": 220 },
-        { "x": 410, "y": 220, "type": "link", "path": "/Applications" }
+        {
+          "x": 130,
+          "y": 220
+        },
+        {
+          "x": 410,
+          "y": 220,
+          "type": "link",
+          "path": "/Applications"
+        }
       ]
     },
     "win": {
-      "target": ["nsis", "zip"],
+      "target": [
+        "nsis",
+        "zip"
+      ],
       "icon": "build/icon.ico"
     },
     "nsis": {
@@ -44,12 +60,15 @@
     }
   },
   "dependencies": {
+    "canvas": "^3.2.3",
     "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",
     "@types/uuid": "^10.0.0",
+    "@vitejs/plugin-react": "^4.5.2",
+    "@vitest/coverage-v8": "^4.1.8",
     "electron": "^35.1.2",
     "electron-builder": "^25.1.8",
     "electron-vite": "^3.1.0",
@@ -57,6 +76,6 @@
     "react-dom": "^19.1.0",
     "typescript": "^5.8.3",
     "vite": "^6.3.5",
-    "@vitejs/plugin-react": "^4.5.2"
+    "vitest": "^4.1.8"
   }
 }
