@@ -27,6 +27,7 @@ jobs:
         run: npx electron-vite build && npx electron-builder --mac dmg zip
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_OPTIONS: '--max-old-space-size=4096'
 
       - name: Upload macOS artifacts to release
         uses: softprops/action-gh-release@v2
@@ -50,6 +51,8 @@ jobs:
       - name: Build app
         run: npx electron-vite build
         shell: bash
+        env:
+          NODE_OPTIONS: '--max-old-space-size=4096'
 
       - name: Package (Windows)
         run: npx electron-builder --win nsis zip
