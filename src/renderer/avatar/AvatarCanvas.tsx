@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useCallback, useState } from 'react'
 import { drawTheoFront, drawTheoWalk, drawTheoPeek, drawTheoWave } from '../sprites/drawTheo'
 import { DEFAULT_SHIRT } from '../sprites/colors'
+import { setAvatar } from '../sprites/avatarConfig'
 import { AnimationController, AnimState } from './animationController'
 import { SpeechBubble } from './SpeechBubble'
 import { playWinkWink } from './sound'
@@ -111,9 +112,10 @@ export function AvatarCanvas() {
       })
     })
 
-    // Load settings for shirt color
-    theo.getSettings().then((settings: { shirtColor: string }) => {
+    // Load settings for shirt color and avatar
+    theo.getSettings().then((settings: { shirtColor: string; avatar?: string }) => {
       setShirtColor(settings.shirtColor)
+      if (settings.avatar === 'missi') setAvatar('missi')
     })
 
     return cleanup

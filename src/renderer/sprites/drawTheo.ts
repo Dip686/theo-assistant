@@ -1,14 +1,16 @@
 /**
- * Sprite switcher — re-exports draw functions from Theo or Missi based on avatarConfig.
+ * Sprite switcher — delegates draw calls to Theo or Missi at runtime.
  */
 
-import { USE_THEO } from './avatarConfig'
+import { getAvatar } from './avatarConfig'
 import * as theo from './drawTheoOriginal'
 import * as missi from './drawMissi'
 
-const sprites = USE_THEO ? theo : missi
+function getSprites() {
+  return getAvatar() === 'theo' ? theo : missi
+}
 
-export const drawTheoFront = sprites.drawTheoFront
-export const drawTheoWalk = sprites.drawTheoWalk
-export const drawTheoPeek = sprites.drawTheoPeek
-export const drawTheoWave = sprites.drawTheoWave
+export const drawTheoFront: typeof theo.drawTheoFront = (opts) => getSprites().drawTheoFront(opts)
+export const drawTheoWalk: typeof theo.drawTheoWalk = (opts) => getSprites().drawTheoWalk(opts)
+export const drawTheoPeek: typeof theo.drawTheoPeek = (opts) => getSprites().drawTheoPeek(opts)
+export const drawTheoWave: typeof theo.drawTheoWave = (opts) => getSprites().drawTheoWave(opts)

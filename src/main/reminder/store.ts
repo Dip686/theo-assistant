@@ -54,6 +54,10 @@ export function loadData(): TheoData {
       if (!data.settings.calendar) {
         data.settings.calendar = { enabled: false, selectedCalendars: [] }
       }
+      // Migrate: add avatar setting if missing
+      if (!data.settings.avatar) {
+        data.settings.avatar = 'theo'
+      }
       return data
     } catch {
       // Corrupted file, start fresh
