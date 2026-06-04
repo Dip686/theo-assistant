@@ -61,7 +61,6 @@
   },
   "dependencies": {
     "canvas": "^3.2.3",
-    "dotenv": "^17.4.2",
     "googleapis": "^173.0.0",
     "uuid": "^11.1.0"
   },
@@ -71,6 +70,7 @@
     "@types/uuid": "^10.0.0",
     "@vitejs/plugin-react": "^4.5.2",
     "@vitest/coverage-v8": "^4.1.8",
+    "dotenv": "^17.4.2",
     "electron": "^35.1.2",
     "electron-builder": "^25.1.8",
     "electron-vite": "^3.1.0",
