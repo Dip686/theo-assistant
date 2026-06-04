@@ -50,6 +50,10 @@ export function loadData(): TheoData {
       data = JSON.parse(raw) as TheoData
       // Migrate: add tasks array if missing (pre-v2.1 data files)
       if (!data.tasks) data.tasks = []
+      // Migrate: add calendar settings if missing
+      if (!data.settings.calendar) {
+        data.settings.calendar = { enabled: false, selectedCalendars: [] }
+      }
       return data
     } catch {
       // Corrupted file, start fresh

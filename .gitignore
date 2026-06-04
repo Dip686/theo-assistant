@@ -10,4 +10,4 @@ build/*
 !build/icon.icns
 !build/icon.ico
 coverage/
-.claude/
+.claude/.env

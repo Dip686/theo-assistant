@@ -2,6 +2,7 @@ import { BrowserWindow, powerMonitor } from 'electron'
 import { Reminder, IPC, ReminderLogEntry } from '../../shared/types'
 import { getReminders, getSettings, addLogEntry } from './store'
 import { moveToActiveDisplay } from '../windows/avatarWindow'
+import { isInMeeting } from '../calendar/calendarService'
 
 interface TimerEntry {
   reminderId: string
@@ -55,6 +56,12 @@ function fireReminder(reminder: Reminder): void {
   // Check if system is idle (screen locked/sleeping)
   if (isSystemIdle) {
     console.log(`Theo: System idle, skipping "${reminder.name}"`)
+    return
+  }
+
+  // Suppress non-meeting reminders during active meetings
+  if (isInMeeting()) {
+    console.log(`Theo: In meeting, suppressing "${reminder.name}"`)
     return
   }
 

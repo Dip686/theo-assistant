@@ -61,6 +61,8 @@
   },
   "dependencies": {
     "canvas": "^3.2.3",
+    "dotenv": "^17.4.2",
+    "googleapis": "^173.0.0",
     "uuid": "^11.1.0"
   },
   "devDependencies": {
