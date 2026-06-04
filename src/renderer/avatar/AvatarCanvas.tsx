@@ -113,9 +113,18 @@ export function AvatarCanvas() {
     })
 
     // Load settings for shirt color and avatar
-    theo.getSettings().then((settings: { shirtColor: string; avatar?: string }) => {
-      setShirtColor(settings.shirtColor)
-      if (settings.avatar === 'missi') setAvatar('missi')
+    theo.getSettings().then(async (settings: { shirtColor: string; avatar?: string }) => {
+      const avatarChoice = settings.avatar === 'missi' ? 'missi' : 'theo'
+      setAvatar(avatarChoice)
+
+      // Use the correct default shirt color for the active avatar
+      if (avatarChoice === 'missi') {
+        const missiColors = await import('../sprites/colorsMissi')
+        setShirtColor(missiColors.DEFAULT_SHIRT)
+      } else {
+        setShirtColor(settings.shirtColor)
+      }
+      console.log('Theo: Avatar set to', avatarChoice)
     })
 
     return cleanup
