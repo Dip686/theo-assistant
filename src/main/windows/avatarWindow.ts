@@ -75,6 +75,11 @@ export function createAvatarWindow(): BrowserWindow {
     avatarWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
 
+  // Re-apply transparent background after page loads — fixes Windows rendering artifact
+  avatarWindow.webContents.on('did-finish-load', () => {
+    avatarWindow?.setBackgroundColor('#00000000')
+  })
+
   avatarWindow.on('closed', () => {
     avatarWindow = null
   })
