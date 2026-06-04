@@ -19,11 +19,15 @@ import http from 'http'
 const DATA_DIR = join(homedir(), '.theo')
 const TOKEN_FILE = join(DATA_DIR, 'google-auth.json')
 
-// OAuth2 client credentials — for a desktop app these are not secret
-// Users can also set their own via environment variables
-const CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '461652737025-placeholder.apps.googleusercontent.com'
-const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || 'placeholder-secret'
 const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
+
+// Read credentials lazily — dotenv must load before these are accessed
+function getClientId(): string {
+  return process.env.GOOGLE_CLIENT_ID || ''
+}
+function getClientSecret(): string {
+  return process.env.GOOGLE_CLIENT_SECRET || ''
+}
 
 interface StoredTokens {
   access_token: string
@@ -36,8 +40,8 @@ let cachedTokens: StoredTokens | null = null
 
 function createOAuth2Client(redirectUri?: string) {
   return new google.auth.OAuth2(
-    CLIENT_ID,
-    CLIENT_SECRET,
+    getClientId(),
+    getClientSecret(),
     redirectUri || 'http://localhost:0'
   )
 }
@@ -128,9 +132,16 @@ export async function connectGoogleCalendar(): Promise<string> {
         prompt: 'consent', // Always show consent to get refresh_token
       })
 
+      console.log(`Theo Calendar: OAuth server listening on port ${port}`)
+      console.log(`Theo Calendar: Redirect URI: ${redirectUri}`)
+
       // Handle the callback
       server.on('request', async (req, res) => {
-        if (!req.url?.startsWith('/callback')) return
+        console.log(`Theo Calendar: Received request: ${req.url}`)
+
+        if (!req.url?.startsWith('/callback')) {
+          res.writeHead(200); res.end('OK'); return
+        }
 
         const url = new URL(req.url, `http://127.0.0.1:${port}`)
         const code = url.searchParams.get('code')
@@ -146,13 +157,19 @@ export async function connectGoogleCalendar(): Promise<string> {
         }
 
         try {
+          console.log('Theo Calendar: Exchanging auth code for tokens...')
           const { tokens } = await oauth2Client.getToken(code)
+          console.log('Theo Calendar: Got tokens, has refresh_token:', !!tokens.refresh_token)
           oauth2Client.setCredentials(tokens)
 
-          // Get user email
-          const oauth2 = google.oauth2({ version: 'v2', auth: oauth2Client })
-          const userInfo = await oauth2.userinfo.get()
-          const email = userInfo.data.email || 'unknown'
+          // Extract email from ID token if available, otherwise use 'Connected'
+          let email = 'Connected'
+          try {
+            if (tokens.id_token) {
+              const payload = JSON.parse(Buffer.from(tokens.id_token.split('.')[1], 'base64').toString())
+              if (payload.email) email = payload.email
+            }
+          } catch { /* ignore */ }
 
           saveTokens({
             access_token: tokens.access_token || '',
@@ -160,6 +177,8 @@ export async function connectGoogleCalendar(): Promise<string> {
             expiry_date: tokens.expiry_date || 0,
             email,
           })
+
+          console.log(`Theo Calendar: Connected as ${email}`)
 
           res.writeHead(200, { 'Content-Type': 'text/html' })
           res.end(`<html><body><h2>Connected!</h2><p>Theo is now connected to ${email}. You can close this window.</p></body></html>`)

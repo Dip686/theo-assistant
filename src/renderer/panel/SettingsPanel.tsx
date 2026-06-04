@@ -29,12 +29,21 @@ interface CalendarStatus {
   meetingEndTime?: string
 }
 
+interface CalendarEvent {
+  id: string
+  summary: string
+  start: string
+  end: string
+  allDay: boolean
+}
+
 const theo = (window as unknown as { theo: {
   getSettings: () => Promise<Settings>
   saveSettings: (s: Settings) => Promise<Settings>
   connectCalendar: () => Promise<string>
   disconnectCalendar: () => Promise<void>
   getCalendarStatus: () => Promise<CalendarStatus>
+  getCalendarEventsToday: () => Promise<CalendarEvent[]>
 } }).theo
 
 export function SettingsPanel() {
@@ -42,6 +51,7 @@ export function SettingsPanel() {
   const [saved, setSaved] = useState(false)
   const [calStatus, setCalStatus] = useState<CalendarStatus>({ connected: false, inMeeting: false })
   const [calConnecting, setCalConnecting] = useState(false)
+  const [todayEvents, setTodayEvents] = useState<CalendarEvent[]>([])
 
   const load = useCallback(async () => {
     const s = await theo.getSettings()
@@ -51,6 +61,10 @@ export function SettingsPanel() {
     try {
       const status = await theo.getCalendarStatus()
       setCalStatus(status)
+      if (status.connected) {
+        const events = await theo.getCalendarEventsToday()
+        setTodayEvents(events)
+      }
     } catch { /* not connected */ }
   }, [])
 
@@ -215,11 +229,61 @@ export function SettingsPanel() {
               />
             </div>
             {settings.calendar.enabled && (
-              <div style={{ fontSize: 10, color: theme.textDim, marginTop: 4 }}>
+              <div style={{ fontSize: 10, color: theme.textDim, marginTop: 4, marginBottom: 8 }}>
                 Theo will remind you 10min and 1min before meetings.
                 Other reminders are suppressed during meetings.
               </div>
             )}
+
+            {/* Today's meetings */}
+            {settings.calendar.enabled && todayEvents.length > 0 && (
+              <div style={{ marginBottom: 8 }}>
+                <div style={{ fontSize: 11, fontWeight: 600, color: theme.textMuted, marginBottom: 6, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                  Today's Meetings
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  {todayEvents.map((event) => {
+                    const start = new Date(event.start)
+                    const end = new Date(event.end)
+                    const now = new Date()
+                    const isActive = now >= start && now < end
+                    const isPast = now >= end
+                    const timeStr = `${start.getHours().toString().padStart(2, '0')}:${start.getMinutes().toString().padStart(2, '0')} – ${end.getHours().toString().padStart(2, '0')}:${end.getMinutes().toString().padStart(2, '0')}`
+
+                    return (
+                      <div key={event.id} style={{
+                        background: theme.bg,
+                        borderRadius: 4,
+                        padding: '6px 8px',
+                        borderLeft: `3px solid ${isActive ? theme.success : isPast ? theme.textDim : theme.primary}`,
+                        opacity: isPast ? 0.5 : 1,
+                      }}>
+                        <div style={{ fontSize: 11, color: theme.text, lineHeight: 1.3 }}>
+                          {event.summary}
+                          {isActive && (
+                            <span style={{
+                              marginLeft: 6, fontSize: 8, padding: '1px 5px',
+                              background: theme.success + '22', color: theme.success,
+                              borderRadius: 3,
+                            }}>NOW</span>
+                          )}
+                        </div>
+                        <div style={{ fontSize: 9, color: theme.textDim, marginTop: 2 }}>
+                          {timeStr}
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+
+            {settings.calendar.enabled && todayEvents.length === 0 && (
+              <div style={{ fontSize: 11, color: theme.textDim, marginBottom: 8, fontStyle: 'italic' }}>
+                No meetings today
+              </div>
+            )}
+
             <button
               onClick={async () => {
                 await theo.disconnectCalendar()
