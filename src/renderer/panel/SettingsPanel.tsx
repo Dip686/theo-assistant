@@ -20,6 +20,7 @@ interface Settings {
   respectDND: boolean
   startOnLogin: boolean
   calendar: CalendarSettings
+  avatar: 'theo' | 'missi'
 }
 
 interface CalendarStatus {
@@ -57,6 +58,7 @@ export function SettingsPanel() {
     const s = await theo.getSettings()
     // Migrate: add calendar settings if missing
     if (!s.calendar) s.calendar = { enabled: false, selectedCalendars: [] }
+    if (!s.avatar) s.avatar = 'theo'
     setSettings(s)
     try {
       const status = await theo.getCalendarStatus()
@@ -86,6 +88,41 @@ export function SettingsPanel() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       <h3 style={{ margin: 0, fontSize: 14, fontWeight: 600 }}>Settings</h3>
+
+      {/* Avatar Picker */}
+      <section style={sectionStyle}>
+        <span style={{ marginBottom: 8, display: 'block' }}>Avatar</span>
+        <div style={{ display: 'flex', gap: 10 }}>
+          {([
+            { id: 'theo' as const, label: 'Theo', desc: 'Boy, curly hair, t-shirt' },
+            { id: 'missi' as const, label: 'Missi', desc: 'Girl, long hair, teal top' },
+          ]).map((av) => (
+            <button
+              key={av.id}
+              onClick={() => update({ avatar: av.id })}
+              style={{
+                flex: 1,
+                padding: '10px 8px',
+                borderRadius: theme.radius,
+                border: `2px solid ${settings.avatar === av.id ? theme.primary : theme.border}`,
+                background: settings.avatar === av.id ? theme.primary + '15' : theme.bg,
+                cursor: 'pointer',
+                textAlign: 'center',
+              }}
+            >
+              <div style={{ fontSize: 13, fontWeight: 600, color: settings.avatar === av.id ? theme.primary : theme.text }}>
+                {av.label}
+              </div>
+              <div style={{ fontSize: 9, color: theme.textMuted, marginTop: 2 }}>
+                {av.desc}
+              </div>
+            </button>
+          ))}
+        </div>
+        <div style={{ fontSize: 10, color: theme.textDim, marginTop: 6 }}>
+          Save settings and restart to switch avatar.
+        </div>
+      </section>
 
       {/* Sound */}
       <section style={sectionStyle}>

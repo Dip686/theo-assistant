@@ -12,7 +12,7 @@ import {
   MOUTH, JEANS, JEANS_SHADOW,
   SHOE, SHOE_SHADOW,
   getShirtShadow,
-} from './colors'
+} from './colorsTheo'
 import { WALK_FRAMES } from './walkOffsets'
 
 interface DrawOptions {

@@ -1,4 +1,5 @@
-// Avatar color palette — inspired by reference
+// Missi's color palette — inspired by reference photo
+// Fair skin, long dark wavy hair, teal sleeveless top, black trousers, red lips
 
 export const SKIN = '#EDC9AF'
 export const SKIN_SHADOW = '#D7AF91'
@@ -13,31 +14,35 @@ export const EYE_IRIS = '#37231A'
 export const MOUTH = '#B43228'
 export const MOUTH_HI = '#C84637'
 export const BLUSH = '#EBB4AA'
-export const GLASSES = '#E6B4AA'
-export const GLASSES_HI = '#F0C8BE'
+export const GLASSES = ''       // No glasses
+export const GLASSES_HI = ''
 export const EYEBROW = '#281C16'
 
-// Pink frock — vivid pink
-export const DRESS = '#F06292'
-export const DRESS_SHADOW = '#D84880'
-export const DRESS_HI = '#F48FB1'
-export const FLOWER_DOT = '#FFF0E6'
+// Outfit: teal sleeveless top
+export const DRESS = '#1A7A8A'
+export const DRESS_SHADOW = '#126570'
+export const DRESS_HI = '#2A9AAA'
+export const FLOWER_DOT = ''    // No flower pattern
 
-// Legacy exports for compatibility
-export const JEANS = DRESS
-export const JEANS_SHADOW = DRESS_SHADOW
-export const SHOE = '#D4A07A'
-export const SHOE_SHADOW = '#C49070'
+// Black trousers
+export const JEANS = '#1A1A2E'
+export const JEANS_SHADOW = '#0F0F1E'
+export const SHOE = '#2A2A3E'
+export const SHOE_SHADOW = '#1A1A2E'
 
-export const DEFAULT_SHIRT = '#F06292'
+// Accessories
+export const NECKLACE = '#D4A843'  // Gold necklace
+export const WATCH = '#D4A843'     // Gold watch
+
+export const DEFAULT_SHIRT = '#1A7A8A'
 
 export const SHIRT_PRESETS = [
+  { name: 'Teal', color: '#1A7A8A' },
   { name: 'Rose Pink', color: '#F06292' },
   { name: 'Lavender', color: '#B89BD6' },
   { name: 'Sky Blue', color: '#87CEEB' },
   { name: 'Mint Green', color: '#98D4A6' },
   { name: 'Peach', color: '#FFCBA4' },
-  { name: 'Lilac', color: '#C8A2C8' },
 ] as const
 
 export function getShirtShadow(color: string): string {

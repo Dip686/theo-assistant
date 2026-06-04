@@ -1,6 +1,7 @@
 /**
  * Missi sprite drawing functions.
- * Girl character: long hair, pink glasses, red lips, pink floral frock.
+ * Girl character: long dark wavy hair, teal sleeveless V-neck top,
+ * black trousers, red lips, gold necklace. No glasses.
  * Taller and slimmer build. All functions draw on a 64x64 pixel grid.
  */
 
@@ -9,12 +10,13 @@ import {
   SKIN, SKIN_SHADOW, SKIN_HI,
   HAIR, HAIR_HI, HAIR_OUTLINE, HAIR_STRAND,
   EYE_WHITE, EYE_PUPIL, EYE_IRIS,
-  MOUTH, MOUTH_HI, BLUSH,
-  GLASSES, GLASSES_HI, EYEBROW,
-  DRESS, DRESS_SHADOW, DRESS_HI, FLOWER_DOT,
+  MOUTH, MOUTH_HI, BLUSH, EYEBROW,
+  DRESS, DRESS_SHADOW, DRESS_HI,
+  JEANS, JEANS_SHADOW,
   SHOE, SHOE_SHADOW,
+  NECKLACE,
   getShirtShadow,
-} from './colors'
+} from './colorsMissi'
 import { WALK_FRAMES } from './walkOffsets'
 
 interface DrawOptions {
@@ -28,10 +30,10 @@ interface DrawOptions {
 // Character shifted up by 2px for more height
 const U = -2
 
-// Helper: draw long hair on both sides
+// Helper: draw long wavy hair on both sides
 function drawLongHair(ctx: CanvasRenderingContext2D, S: number, ox: number, oy: number) {
   const u = oy + U
-  // Hair top (matches slimmer face)
+  // Hair top
   for (let x = 26; x <= 37; x++) px(ctx, x+ox, 14+u, HAIR, S)
   for (let x = 25; x <= 38; x++) px(ctx, x+ox, 15+u, HAIR, S)
   for (let x = 24; x <= 39; x++) { px(ctx, x+ox, 16+u, HAIR, S); px(ctx, x+ox, 17+u, HAIR, S); px(ctx, x+ox, 18+u, HAIR, S) }
@@ -43,12 +45,12 @@ function drawLongHair(ctx: CanvasRenderingContext2D, S: number, ox: number, oy: 
   // Side highlights
   px(ctx, 27+ox, 16+u, HAIR_HI, S); px(ctx, 36+ox, 16+u, HAIR_HI, S)
 
-  // Long hair falling down both sides (slim — 1px wide each side)
+  // Long hair falling down both sides (2px wide each side)
   for (let y = 19; y <= 40; y++) {
     px(ctx, 22+ox, y+u, HAIR, S); px(ctx, 23+ox, y+u, HAIR, S)
     px(ctx, 40+ox, y+u, HAIR, S); px(ctx, 41+ox, y+u, HAIR, S)
   }
-  // Hair strand wisps
+  // Hair strand wisps (wavy effect)
   for (let y = 32; y <= 42; y++) {
     px(ctx, 21+ox, y+u, HAIR_STRAND, S)
     px(ctx, 42+ox, y+u, HAIR_STRAND, S)
@@ -58,72 +60,28 @@ function drawLongHair(ctx: CanvasRenderingContext2D, S: number, ox: number, oy: 
   px(ctx, 23+ox, 42+u, HAIR_STRAND, S); px(ctx, 40+ox, 42+u, HAIR_STRAND, S)
 }
 
-// Helper: draw glasses
-function drawGlasses(ctx: CanvasRenderingContext2D, S: number, ox: number, oy: number) {
-  const u = oy + U
-  // Left lens frame
-  px(ctx, 25+ox, 20+u, GLASSES, S); px(ctx, 26+ox, 20+u, GLASSES, S); px(ctx, 29+ox, 20+u, GLASSES, S); px(ctx, 30+ox, 20+u, GLASSES, S)
-  px(ctx, 25+ox, 21+u, GLASSES, S); px(ctx, 25+ox, 22+u, GLASSES, S); px(ctx, 25+ox, 23+u, GLASSES, S)
-  px(ctx, 30+ox, 21+u, GLASSES, S); px(ctx, 30+ox, 22+u, GLASSES, S); px(ctx, 30+ox, 23+u, GLASSES, S)
-  px(ctx, 26+ox, 24+u, GLASSES, S); px(ctx, 27+ox, 24+u, GLASSES, S); px(ctx, 28+ox, 24+u, GLASSES, S); px(ctx, 29+ox, 24+u, GLASSES, S)
-
-  // Right lens frame
-  px(ctx, 33+ox, 20+u, GLASSES, S); px(ctx, 34+ox, 20+u, GLASSES, S); px(ctx, 37+ox, 20+u, GLASSES, S); px(ctx, 38+ox, 20+u, GLASSES, S)
-  px(ctx, 33+ox, 21+u, GLASSES, S); px(ctx, 33+ox, 22+u, GLASSES, S); px(ctx, 33+ox, 23+u, GLASSES, S)
-  px(ctx, 38+ox, 21+u, GLASSES, S); px(ctx, 38+ox, 22+u, GLASSES, S); px(ctx, 38+ox, 23+u, GLASSES, S)
-  px(ctx, 34+ox, 24+u, GLASSES, S); px(ctx, 35+ox, 24+u, GLASSES, S); px(ctx, 36+ox, 24+u, GLASSES, S); px(ctx, 37+ox, 24+u, GLASSES, S)
-
-  // Bridge
-  px(ctx, 31+ox, 21+u, GLASSES, S); px(ctx, 32+ox, 21+u, GLASSES, S)
-
-  // Temple arms
-  px(ctx, 24+ox, 21+u, GLASSES_HI, S); px(ctx, 23+ox, 21+u, GLASSES_HI, S)
-  px(ctx, 39+ox, 21+u, GLASSES_HI, S); px(ctx, 40+ox, 21+u, GLASSES_HI, S)
-}
-
-// Helper: draw pink frock with flower dots (slimmer body)
-function drawFrock(ctx: CanvasRenderingContext2D, S: number, ox: number, oy: number, dressColor: string) {
-  const shdw = getShirtShadow(dressColor)
+// Helper: draw sleeveless top with V-neck
+function drawTop(ctx: CanvasRenderingContext2D, S: number, ox: number, oy: number, topColor: string) {
+  const shdw = getShirtShadow(topColor)
   const u = oy + U
 
-  // Main dress body (narrower: 26-37 instead of 24-39)
-  for (let y = 29; y <= 50; y++) {
-    const flare = y >= 42 ? Math.floor((y - 41) * 0.6) : 0
-    for (let x = 26 - flare; x <= 37 + flare; x++) {
-      px(ctx, x+ox, y+u, dressColor, S)
+  // Sleeveless top body (narrower: 26-37)
+  for (let y = 29; y <= 38; y++) {
+    for (let x = 26; x <= 37; x++) {
+      px(ctx, x+ox, y+u, topColor, S)
     }
   }
 
   // V-neck cutout
   px(ctx, 30+ox, 29+u, SKIN, S); px(ctx, 31+ox, 29+u, SKIN, S); px(ctx, 32+ox, 29+u, SKIN, S); px(ctx, 33+ox, 29+u, SKIN, S)
-  px(ctx, 31+ox, 30+u, shdw, S); px(ctx, 32+ox, 30+u, shdw, S)
+  px(ctx, 31+ox, 30+u, SKIN, S); px(ctx, 32+ox, 30+u, SKIN, S)
 
-  // Dress fold shadows
-  for (let y = 33; y <= 49; y += 3) {
+  // Fold shadows
+  for (let y = 33; y <= 37; y += 2) {
     px(ctx, 28+ox, y+u, shdw, S); px(ctx, 35+ox, y+u, shdw, S)
   }
 
-  // Dress highlights
-  for (let y = 32; y <= 48; y += 4) {
-    px(ctx, 30+ox, y+u, DRESS_HI, S); px(ctx, 33+ox, y+u, DRESS_HI, S)
-  }
-
-  // Flower pattern dots
-  const flowers = [
-    [28, 33], [32, 34], [36, 33],
-    [27, 37], [31, 38], [35, 37],
-    [26, 41], [30, 42], [34, 41],
-    [27, 45], [31, 44], [35, 45],
-    [28, 48], [32, 48], [36, 48],
-  ]
-  for (const [x, y] of flowers) px(ctx, x+ox, y+u, FLOWER_DOT, S)
-
-  // Puffy sleeves (narrower)
-  for (let y = 29; y <= 32; y++) {
-    px(ctx, 24+ox, y+u, dressColor, S); px(ctx, 25+ox, y+u, dressColor, S)
-    px(ctx, 38+ox, y+u, dressColor, S); px(ctx, 39+ox, y+u, dressColor, S)
-  }
-  px(ctx, 24+ox, 30+u, DRESS_HI, S); px(ctx, 39+ox, 30+u, DRESS_HI, S)
+  // No sleeves — bare shoulders/arms visible
 }
 
 // ============================================================
@@ -137,7 +95,7 @@ export function drawTheoFront(opts: DrawOptions): void {
   // Long hair (behind body)
   drawLongHair(ctx, S, ox, oy)
 
-  // Face (slimmer: 25-38 instead of 24-39)
+  // Face (slimmer: 25-38)
   for (let y = 19; y <= 27; y++) for (let x = 25; x <= 38; x++) px(ctx, x+ox, y+u, SKIN, S)
 
   // Forehead highlight
@@ -175,9 +133,6 @@ export function drawTheoFront(opts: DrawOptions): void {
   px(ctx, 25+ox, 20+u, HAIR, S); px(ctx, 30+ox, 20+u, HAIR, S)
   px(ctx, 33+ox, 20+u, HAIR, S); px(ctx, 38+ox, 20+u, HAIR, S)
 
-  // Glasses
-  drawGlasses(ctx, S, ox, oy)
-
   // Nose
   px(ctx, 31+ox, 24+u, SKIN_SHADOW, S); px(ctx, 32+ox, 24+u, SKIN_SHADOW, S)
   px(ctx, 31+ox, 25+u, SKIN_SHADOW, S)
@@ -190,18 +145,33 @@ export function drawTheoFront(opts: DrawOptions): void {
   // Neck (slimmer)
   rect(ctx, 30+ox, 28+u, 3, 2, SKIN, S)
 
-  // Pink frock
-  drawFrock(ctx, S, ox, oy, shirtColor)
+  // Gold necklace
+  px(ctx, 29+ox, 29+u, NECKLACE, S); px(ctx, 30+ox, 29+u, NECKLACE, S)
+  px(ctx, 33+ox, 29+u, NECKLACE, S); px(ctx, 34+ox, 29+u, NECKLACE, S)
+  px(ctx, 31+ox, 30+u, NECKLACE, S); px(ctx, 32+ox, 30+u, NECKLACE, S) // pendant
 
-  // Arms below sleeves (slimmer position)
-  for (let y = 33; y <= 39; y++) {
-    px(ctx, 23+ox, y+u, SKIN, S); px(ctx, 24+ox, y+u, SKIN, S)
-    px(ctx, 39+ox, y+u, SKIN, S); px(ctx, 40+ox, y+u, SKIN, S)
+  // Sleeveless top
+  drawTop(ctx, S, ox, oy, shirtColor)
+
+  // Bare arms (no sleeves — skin from shoulder down)
+  for (let y = 29; y <= 39; y++) {
+    px(ctx, 24+ox, y+u, SKIN, S); px(ctx, 25+ox, y+u, SKIN, S)
+    px(ctx, 38+ox, y+u, SKIN, S); px(ctx, 39+ox, y+u, SKIN, S)
   }
+  // Hand highlights
+  px(ctx, 24+ox, 39+u, SKIN_HI, S); px(ctx, 39+ox, 39+u, SKIN_HI, S)
 
-  // Sandals
-  for (let x = 27; x <= 31; x++) { px(ctx, x+ox, 51+u, SHOE, S); px(ctx, x+ox, 52+u, SHOE_SHADOW, S) }
-  for (let x = 32; x <= 36; x++) { px(ctx, x+ox, 51+u, SHOE, S); px(ctx, x+ox, 52+u, SHOE_SHADOW, S) }
+  // Gold watch on left wrist
+  px(ctx, 24+ox, 37+u, NECKLACE, S); px(ctx, 24+ox, 38+u, NECKLACE, S)
+
+  // Black trousers
+  for (let y = 39; y <= 48; y++) for (let x = 27; x <= 36; x++) px(ctx, x+ox, y+u, JEANS, S)
+  for (let y = 42; y <= 48; y++) { px(ctx, 31+ox, y+u, JEANS_SHADOW, S); px(ctx, 32+ox, y+u, JEANS_SHADOW, S) }
+  for (let y = 39; y <= 48; y++) { px(ctx, 27+ox, y+u, JEANS_SHADOW, S); px(ctx, 36+ox, y+u, JEANS_SHADOW, S) }
+
+  // Shoes
+  for (let x = 26; x <= 31; x++) { px(ctx, x+ox, 49+u, SHOE, S); px(ctx, x+ox, 50+u, SHOE_SHADOW, S) }
+  for (let x = 32; x <= 37; x++) { px(ctx, x+ox, 49+u, SHOE, S); px(ctx, x+ox, 50+u, SHOE_SHADOW, S) }
 
   addOutline(ctx, S)
 }
@@ -216,7 +186,7 @@ export function drawTheoWalk(opts: DrawOptions & { frame: number }): void {
 
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
 
-  // Hair top (slim)
+  // Hair top
   for (let x = 26; x <= 37; x++) px(ctx, x, 14+by, HAIR, S)
   for (let x = 25; x <= 38; x++) px(ctx, x, 15+by, HAIR, S)
   for (let x = 24; x <= 39; x++) { px(ctx, x, 16+by, HAIR, S); px(ctx, x, 17+by, HAIR, S); px(ctx, x, 18+by, HAIR, S) }
@@ -232,8 +202,7 @@ export function drawTheoWalk(opts: DrawOptions & { frame: number }): void {
     px(ctx, 40, y+by, HAIR, S); px(ctx, 41, y+by, HAIR, S)
   }
   for (let y = 32; y <= 42; y++) {
-    px(ctx, 21, y+by, HAIR_STRAND, S)
-    px(ctx, 42, y+by, HAIR_STRAND, S)
+    px(ctx, 21, y+by, HAIR_STRAND, S); px(ctx, 42, y+by, HAIR_STRAND, S)
   }
 
   // Face (slim)
@@ -261,44 +230,39 @@ export function drawTheoWalk(opts: DrawOptions & { frame: number }): void {
   px(ctx, 25, 20+by, HAIR, S); px(ctx, 30, 20+by, HAIR, S)
   px(ctx, 33, 20+by, HAIR, S); px(ctx, 38, 20+by, HAIR, S)
 
-  // Glasses
-  drawGlasses(ctx, S, 0, f.bounce)
-
   // Nose & lips
   px(ctx, 31, 24+by, SKIN_SHADOW, S); px(ctx, 32, 24+by, SKIN_SHADOW, S)
   for (let x = 29; x <= 34; x++) px(ctx, x, 26+by, MOUTH, S)
   px(ctx, 31, 26+by, MOUTH_HI, S); px(ctx, 32, 26+by, MOUTH_HI, S)
 
-  // Neck
+  // Neck + necklace
   rect(ctx, 30, 28+by, 3, 2, SKIN, S)
+  px(ctx, 29, 29+by, NECKLACE, S); px(ctx, 34, 29+by, NECKLACE, S)
+  px(ctx, 31, 30+by, NECKLACE, S); px(ctx, 32, 30+by, NECKLACE, S)
 
-  // Frock body (slimmer)
-  for (let y = 29; y <= 50; y++) {
-    const flare = y >= 42 ? Math.floor((y - 41) * 0.6) : 0
-    for (let x = 26 - flare; x <= 37 + flare; x++) px(ctx, x, y+by, shirtColor, S)
-  }
+  // Sleeveless top body
+  for (let y = 29; y <= 38; y++) for (let x = 26; x <= 37; x++) px(ctx, x, y+by, shirtColor, S)
   // V-neck
   px(ctx, 30, 29+by, SKIN, S); px(ctx, 31, 29+by, SKIN, S); px(ctx, 32, 29+by, SKIN, S); px(ctx, 33, 29+by, SKIN, S)
+  px(ctx, 31, 30+by, SKIN, S); px(ctx, 32, 30+by, SKIN, S)
 
-  // Flower dots
-  const flowers = [[28,33],[32,34],[36,33],[27,37],[31,38],[35,37],[26,41],[30,42],[34,41],[28,48],[32,48]]
-  for (const [x,y] of flowers) px(ctx, x, y+by, FLOWER_DOT, S)
-
-  // Puffy sleeves
-  for (let y = 29; y <= 32; y++) {
-    px(ctx, 24, y+by, shirtColor, S); px(ctx, 25, y+by, shirtColor, S)
-    px(ctx, 38, y+by, shirtColor, S); px(ctx, 39, y+by, shirtColor, S)
+  // Bare arms (swinging)
+  for (let y = 29; y <= 39; y++) {
+    px(ctx, 24+f.leftArm, y+by, SKIN, S); px(ctx, 25+f.leftArm, y+by, SKIN, S)
+    px(ctx, 38+f.rightArm, y+by, SKIN, S); px(ctx, 39+f.rightArm, y+by, SKIN, S)
   }
 
-  // Arms (swinging, slimmer position)
-  for (let y = 33; y <= 39; y++) {
-    px(ctx, 23+f.leftArm, y+by, SKIN, S); px(ctx, 24+f.leftArm, y+by, SKIN, S)
-    px(ctx, 39+f.rightArm, y+by, SKIN, S); px(ctx, 40+f.rightArm, y+by, SKIN, S)
+  // Black trousers with legs
+  for (let y = 39; y <= 48; y++) {
+    for (let dx = 0; dx < 4; dx++) px(ctx, 27+f.leftLeg+dx, y, JEANS, S)
+    px(ctx, 30+f.leftLeg, y, JEANS_SHADOW, S)
+    for (let dx = 0; dx < 4; dx++) px(ctx, 33+f.rightLeg+dx, y, JEANS, S)
+    px(ctx, 36+f.rightLeg, y, JEANS_SHADOW, S)
   }
 
-  // Sandals
-  for (let x = 27; x <= 31; x++) { px(ctx, x+f.leftLeg, 51+U, SHOE, S); px(ctx, x+f.leftLeg, 52+U, SHOE_SHADOW, S) }
-  for (let x = 32; x <= 36; x++) { px(ctx, x+f.rightLeg, 51+U, SHOE, S); px(ctx, x+f.rightLeg, 52+U, SHOE_SHADOW, S) }
+  // Shoes
+  for (let x = 26; x <= 31; x++) { px(ctx, x+f.leftLeg, 49+U, SHOE, S); px(ctx, x+f.leftLeg, 50+U, SHOE_SHADOW, S) }
+  for (let x = 32; x <= 37; x++) { px(ctx, x+f.rightLeg, 49+U, SHOE, S); px(ctx, x+f.rightLeg, 50+U, SHOE_SHADOW, S) }
 
   addOutline(ctx, S)
 }
@@ -330,12 +294,6 @@ export function drawTheoPeek(opts: DrawOptions): void {
   rect(ctx, 33+ox, 19+U, 4, 3, EYE_WHITE, S)
   px(ctx, 34+ox, 20+U, EYE_IRIS, S); px(ctx, 35+ox, 20+U, EYE_PUPIL, S)
   px(ctx, 35+ox, 19+U, EYE_IRIS, S); px(ctx, 34+ox, 19+U, '#FFFFFF', S)
-
-  // Right glasses frame
-  px(ctx, 33+ox, 18+U, GLASSES, S); px(ctx, 37+ox, 18+U, GLASSES, S); px(ctx, 38+ox, 18+U, GLASSES, S)
-  px(ctx, 33+ox, 19+U, GLASSES, S); px(ctx, 33+ox, 20+U, GLASSES, S); px(ctx, 33+ox, 21+U, GLASSES, S)
-  px(ctx, 38+ox, 19+U, GLASSES, S); px(ctx, 38+ox, 20+U, GLASSES, S); px(ctx, 38+ox, 21+U, GLASSES, S)
-  px(ctx, 34+ox, 22+U, GLASSES, S); px(ctx, 35+ox, 22+U, GLASSES, S); px(ctx, 36+ox, 22+U, GLASSES, S); px(ctx, 37+ox, 22+U, GLASSES, S)
 
   // Eyebrow
   for (let x = 34; x <= 37; x++) px(ctx, x+ox, 17+U, EYEBROW, S)
@@ -392,35 +350,27 @@ export function drawTheoWave(opts: DrawOptions): void {
   px(ctx, 25, 20+U, HAIR, S); px(ctx, 30, 20+U, HAIR, S)
   px(ctx, 33, 20+U, HAIR, S); px(ctx, 38, 20+U, HAIR, S)
 
-  // Glasses
-  drawGlasses(ctx, S, 0, 0)
-
   // Big smile with red lips
   px(ctx, 31, 24+U, SKIN_SHADOW, S); px(ctx, 32, 24+U, SKIN_SHADOW, S)
   for (let x = 28; x <= 35; x++) px(ctx, x, 26+U, MOUTH, S)
   px(ctx, 27, 25+U, MOUTH, S); px(ctx, 36, 25+U, MOUTH, S)
   px(ctx, 31, 26+U, MOUTH_HI, S); px(ctx, 32, 26+U, MOUTH_HI, S)
 
-  // Neck
+  // Neck + necklace
   rect(ctx, 30, 28+U, 3, 2, SKIN, S)
+  px(ctx, 29, 29+U, NECKLACE, S); px(ctx, 34, 29+U, NECKLACE, S)
+  px(ctx, 31, 30+U, NECKLACE, S); px(ctx, 32, 30+U, NECKLACE, S)
 
-  // Frock (slimmer)
-  for (let y = 29; y <= 50; y++) {
-    const flare = y >= 42 ? Math.floor((y - 41) * 0.6) : 0
-    for (let x = 26 - flare; x <= 37 + flare; x++) px(ctx, x, y+U, shirtColor, S)
-  }
+  // Sleeveless top
+  for (let y = 29; y <= 38; y++) for (let x = 26; x <= 37; x++) px(ctx, x, y+U, shirtColor, S)
   px(ctx, 30, 29+U, SKIN, S); px(ctx, 31, 29+U, SKIN, S); px(ctx, 32, 29+U, SKIN, S); px(ctx, 33, 29+U, SKIN, S)
+  px(ctx, 31, 30+U, SKIN, S); px(ctx, 32, 30+U, SKIN, S)
 
-  // Flower dots
-  const flowers = [[28,33],[32,34],[36,33],[27,37],[31,38],[35,37],[26,41],[30,42],[34,41],[28,48],[32,48]]
-  for (const [x,y] of flowers) px(ctx, x, y+U, FLOWER_DOT, S)
+  // Left arm (down, bare)
+  for (let y = 29; y <= 39; y++) { px(ctx, 24, y+U, SKIN, S); px(ctx, 25, y+U, SKIN, S) }
 
-  // Left arm (down) with puffy sleeve
-  for (let y = 29; y <= 32; y++) { px(ctx, 24, y+U, shirtColor, S); px(ctx, 25, y+U, shirtColor, S) }
-  for (let y = 33; y <= 39; y++) { px(ctx, 23, y+U, SKIN, S); px(ctx, 24, y+U, SKIN, S) }
-
-  // Right arm RAISED (waving) with puffy sleeve
-  for (let y = 29; y <= 31; y++) { px(ctx, 38, y+U, shirtColor, S); px(ctx, 39, y+U, shirtColor, S) }
+  // Right arm RAISED (waving, bare)
+  px(ctx, 38, 29+U, SKIN, S); px(ctx, 39, 29+U, SKIN, S)
   px(ctx, 40, 28+U, SKIN, S); px(ctx, 41, 28+U, SKIN, S)
   px(ctx, 41, 27+U, SKIN, S); px(ctx, 42, 27+U, SKIN, S)
   px(ctx, 42, 26+U, SKIN, S); px(ctx, 43, 26+U, SKIN, S)
@@ -428,9 +378,13 @@ export function drawTheoWave(opts: DrawOptions): void {
   px(ctx, 43, 25+U, SKIN_HI, S); px(ctx, 44, 25+U, SKIN_HI, S)
   px(ctx, 45, 24+U, SKIN_HI, S)
 
-  // Sandals
-  for (let x = 27; x <= 31; x++) { px(ctx, x, 51+U, SHOE, S); px(ctx, x, 52+U, SHOE_SHADOW, S) }
-  for (let x = 32; x <= 36; x++) { px(ctx, x, 51+U, SHOE, S); px(ctx, x, 52+U, SHOE_SHADOW, S) }
+  // Black trousers
+  for (let y = 39; y <= 48; y++) for (let x = 27; x <= 36; x++) px(ctx, x, y+U, JEANS, S)
+  for (let y = 42; y <= 48; y++) { px(ctx, 31, y+U, JEANS_SHADOW, S); px(ctx, 32, y+U, JEANS_SHADOW, S) }
+
+  // Shoes
+  for (let x = 26; x <= 31; x++) { px(ctx, x, 49+U, SHOE, S); px(ctx, x, 50+U, SHOE_SHADOW, S) }
+  for (let x = 32; x <= 37; x++) { px(ctx, x, 49+U, SHOE, S); px(ctx, x, 50+U, SHOE_SHADOW, S) }
 
   addOutline(ctx, S)
 }

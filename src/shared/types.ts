@@ -31,6 +31,7 @@ export interface Settings {
   respectDND: boolean
   startOnLogin: boolean
   calendar: CalendarSettings
+  avatar: 'theo' | 'missi'
 }
 
 export interface CalendarEvent {
@@ -165,4 +166,5 @@ export const DEFAULT_SETTINGS: Settings = {
     enabled: false,
     selectedCalendars: [],
   },
+  avatar: 'theo' as const,
 }
