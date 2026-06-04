@@ -43,16 +43,16 @@ export function createAvatarWindow(): BrowserWindow {
     height: WIN_HEIGHT,
     x: winX,
     y: winY,
-    title: '', // Prevent window title tooltip on Windows
+    title: '',
     transparent: true,
     frame: false,
+    thickFrame: false,    // Remove Windows DWM caption bar
     alwaysOnTop: true,
     hasShadow: false,
     skipTaskbar: true,
     resizable: false,
     focusable: false,
     show: true,
-    // Explicit transparent background — fixes white flash / residual block on Windows
     backgroundColor: '#00000000',
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
