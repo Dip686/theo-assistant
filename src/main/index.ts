@@ -1,12 +1,3 @@
-import { config } from 'dotenv'
-import { resolve, join } from 'path'
-
-// Load .env from project root
-// In dev: __dirname = out/main, so ../../.env = project root
-// Also try app root for packaged builds
-config({ path: resolve(__dirname, '../../.env') })
-config({ path: join(process.cwd(), '.env') })
-
 import { app, globalShortcut, screen } from 'electron'
 import { createAvatarWindow, setAvatarInteractive, getAvatarWindow, moveToActiveDisplay, moveToPrimaryDisplay } from './windows/avatarWindow'
 import { showPanelWindow } from './windows/panelWindow'
