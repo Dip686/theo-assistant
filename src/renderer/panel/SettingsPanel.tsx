@@ -267,7 +267,7 @@ export function SettingsPanel() {
             </div>
             {settings.calendar.enabled && (
               <div style={{ fontSize: 10, color: theme.textDim, marginTop: 4, marginBottom: 8 }}>
-                Theo will remind you 10min and 1min before meetings.
+                Theo will remind you 15min and 1min before meetings.
                 Other reminders are suppressed during meetings.
               </div>
             )}

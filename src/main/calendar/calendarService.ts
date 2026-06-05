@@ -214,7 +214,7 @@ function updateMeetingState(): void {
 }
 
 /**
- * Schedule Theo reminders at 10min and 1min before each upcoming meeting.
+ * Schedule Theo reminders at 15min and 1min before each upcoming meeting.
  * Re-checks the calendar before actually showing the notification.
  */
 function scheduleMeetingReminders(): void {
@@ -225,12 +225,12 @@ function scheduleMeetingReminders(): void {
   for (const event of todayEvents) {
     const startTime = new Date(event.start).getTime()
 
-    // 10-minute reminder
-    const tenMinBefore = startTime - 10 * 60 * 1000
-    if (tenMinBefore > now) {
+    // 15-minute reminder
+    const fifteenMinBefore = startTime - 15 * 60 * 1000
+    if (fifteenMinBefore > now) {
       const timer = setTimeout(() => {
-        fireMeetingReminder(event, 10)
-      }, tenMinBefore - now)
+        fireMeetingReminder(event, 15)
+      }, fifteenMinBefore - now)
       meetingTimers.push(timer)
     }
 
