@@ -47,10 +47,11 @@ export function getTodayEvents(): CalendarEvent[] {
 }
 
 /**
- * Force sync and return today's events (used by "Sync now" button)
+ * Force sync and return today's events (used by "Sync now" button).
+ * Bypasses the settings.calendar.enabled check.
  */
 export async function syncAndGetEvents(): Promise<CalendarEvent[]> {
-  await syncEvents()
+  await syncEvents(true)
   return todayEvents
 }
 
@@ -88,14 +89,23 @@ export function stopCalendarSync(): void {
 /**
  * Fetch today's events from Google Calendar and schedule meeting reminders
  */
-async function syncEvents(): Promise<void> {
-  if (!isConnected()) return
+async function syncEvents(force = false): Promise<void> {
+  if (!isConnected()) {
+    console.log('Theo Calendar: Not connected, skipping sync')
+    return
+  }
 
   const auth = getAuthClient()
-  if (!auth) return
+  if (!auth) {
+    console.log('Theo Calendar: No auth client, skipping sync')
+    return
+  }
 
   const settings = getSettings()
-  if (!settings.calendar?.enabled) return
+  if (!force && !settings.calendar?.enabled) {
+    console.log('Theo Calendar: Calendar not enabled in settings, skipping sync')
+    return
+  }
 
   const calendar = google.calendar({ version: 'v3', auth })
 
