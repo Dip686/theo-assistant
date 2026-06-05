@@ -1,7 +1,7 @@
 import { ipcMain } from 'electron'
 import { IPC, Reminder, Settings, Task, CalendarStatus } from '../shared/types'
 import { connectGoogleCalendar, disconnectGoogleCalendar, isConnected, getConnectedEmail } from './calendar/googleAuth'
-import { isInMeeting, getMeetingEndTime, getTodayEvents, listCalendars, stopCalendarSync } from './calendar/calendarService'
+import { isInMeeting, getMeetingEndTime, getTodayEvents, syncAndGetEvents, listCalendars, startCalendarSync, stopCalendarSync } from './calendar/calendarService'
 import {
   getReminders,
   createReminder,
@@ -92,7 +92,12 @@ export function registerIpcHandlers(callbacks: {
   })
 
   // Calendar
-  ipcMain.handle(IPC.CALENDAR_CONNECT, () => connectGoogleCalendar())
+  ipcMain.handle(IPC.CALENDAR_CONNECT, async () => {
+    const email = await connectGoogleCalendar()
+    // Start syncing immediately after connecting
+    startCalendarSync()
+    return email
+  })
 
   ipcMain.handle(IPC.CALENDAR_DISCONNECT, () => {
     disconnectGoogleCalendar()
@@ -106,7 +111,7 @@ export function registerIpcHandlers(callbacks: {
     meetingEndTime: getMeetingEndTime(),
   }))
 
-  ipcMain.handle(IPC.CALENDAR_EVENTS_TODAY, () => getTodayEvents())
+  ipcMain.handle(IPC.CALENDAR_EVENTS_TODAY, () => syncAndGetEvents())
 
   ipcMain.handle(IPC.CALENDAR_LIST, () => listCalendars())
 }

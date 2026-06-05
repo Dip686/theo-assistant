@@ -47,6 +47,14 @@ export function getTodayEvents(): CalendarEvent[] {
 }
 
 /**
+ * Force sync and return today's events (used by "Sync now" button)
+ */
+export async function syncAndGetEvents(): Promise<CalendarEvent[]> {
+  await syncEvents()
+  return todayEvents
+}
+
+/**
  * Start the calendar sync loop
  */
 export function startCalendarSync(): void {
