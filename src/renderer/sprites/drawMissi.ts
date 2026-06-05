@@ -65,8 +65,8 @@ function drawTop(ctx: CanvasRenderingContext2D, S: number, ox: number, oy: numbe
   const shdw = getShirtShadow(topColor)
   const u = oy + U
 
-  // Sleeveless top body (narrower: 26-37)
-  for (let y = 29; y <= 38; y++) {
+  // Sleeveless top body — extends to row 39 to overlap with trousers at waist
+  for (let y = 29; y <= 39; y++) {
     for (let x = 26; x <= 37; x++) {
       px(ctx, x+ox, y+u, topColor, S)
     }
@@ -241,7 +241,7 @@ export function drawTheoWalk(opts: DrawOptions & { frame: number }): void {
   px(ctx, 31, 30+by, NECKLACE, S); px(ctx, 32, 30+by, NECKLACE, S)
 
   // Sleeveless top body
-  for (let y = 29; y <= 38; y++) for (let x = 26; x <= 37; x++) px(ctx, x, y+by, shirtColor, S)
+  for (let y = 29; y <= 39; y++) for (let x = 26; x <= 37; x++) px(ctx, x, y+by, shirtColor, S)
   // V-neck
   px(ctx, 30, 29+by, SKIN, S); px(ctx, 31, 29+by, SKIN, S); px(ctx, 32, 29+by, SKIN, S); px(ctx, 33, 29+by, SKIN, S)
   px(ctx, 31, 30+by, SKIN, S); px(ctx, 32, 30+by, SKIN, S)
@@ -362,7 +362,7 @@ export function drawTheoWave(opts: DrawOptions): void {
   px(ctx, 31, 30+U, NECKLACE, S); px(ctx, 32, 30+U, NECKLACE, S)
 
   // Sleeveless top
-  for (let y = 29; y <= 38; y++) for (let x = 26; x <= 37; x++) px(ctx, x, y+U, shirtColor, S)
+  for (let y = 29; y <= 39; y++) for (let x = 26; x <= 37; x++) px(ctx, x, y+U, shirtColor, S)
   px(ctx, 30, 29+U, SKIN, S); px(ctx, 31, 29+U, SKIN, S); px(ctx, 32, 29+U, SKIN, S); px(ctx, 33, 29+U, SKIN, S)
   px(ctx, 31, 30+U, SKIN, S); px(ctx, 32, 30+U, SKIN, S)
 
