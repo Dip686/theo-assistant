@@ -321,6 +321,23 @@ export function SettingsPanel() {
               </div>
             )}
 
+            {settings.calendar.enabled && (
+              <button
+                onClick={async () => {
+                  const events = await theo.getCalendarEventsToday()
+                  setTodayEvents(events)
+                  console.log('Calendar sync:', events.length, 'events')
+                }}
+                style={{
+                  ...baseBtn, marginBottom: 8,
+                  background: theme.surface, color: theme.textMuted,
+                  fontSize: 10, padding: '4px 10px',
+                }}
+              >
+                Sync now
+              </button>
+            )}
+
             <button
               onClick={async () => {
                 await theo.disconnectCalendar()
