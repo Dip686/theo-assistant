@@ -101,7 +101,6 @@ app.whenReady().then(() => {
 
   // Start calendar sync if connected and enabled
   setCalendarAvatarWindow(avatarWin)
-  const settings = getSettings()
   if (isConnected() && settings.calendar?.enabled) {
     startCalendarSync()
   }
