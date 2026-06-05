@@ -3,15 +3,12 @@ import { resolve } from 'path'
 import { config } from 'dotenv'
 import react from '@vitejs/plugin-react'
 
-// Load .env so credentials are available at build time
+// Load .env so GOOGLE_CLIENT_ID/SECRET are in process.env at build time
+// In CI, these come from GitHub Secrets instead
 config()
 
 export default defineConfig({
   main: {
-    define: {
-      'process.env.GOOGLE_CLIENT_ID': JSON.stringify(process.env.GOOGLE_CLIENT_ID || ''),
-      'process.env.GOOGLE_CLIENT_SECRET': JSON.stringify(process.env.GOOGLE_CLIENT_SECRET || ''),
-    },
     build: {
       outDir: 'out/main',
       lib: {

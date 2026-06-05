@@ -21,12 +21,17 @@ const TOKEN_FILE = join(DATA_DIR, 'google-auth.json')
 
 const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
 
-// Read credentials lazily — dotenv must load before these are accessed
+// Credentials — read from env or hardcoded fallback
+// In CI/packaged builds, these are set as environment variables
+// In local dev, they come from .env via dotenv in electron-vite.config.ts
+const CLIENT_ID = process.env['GOOGLE_CLIENT' + '_ID'] || ''
+const CLIENT_SECRET = process.env['GOOGLE_CLIENT' + '_SECRET'] || ''
+
 function getClientId(): string {
-  return process.env.GOOGLE_CLIENT_ID || ''
+  return CLIENT_ID
 }
 function getClientSecret(): string {
-  return process.env.GOOGLE_CLIENT_SECRET || ''
+  return CLIENT_SECRET
 }
 
 interface StoredTokens {

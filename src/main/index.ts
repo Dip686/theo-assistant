@@ -1,3 +1,6 @@
+// Load .env for Google Calendar credentials (dev + local builds)
+try { require('dotenv').config() } catch { /* dotenv not available in packaged builds */ }
+
 import { app, globalShortcut, screen } from 'electron'
 import { createAvatarWindow, setAvatarInteractive, getAvatarWindow, moveToActiveDisplay, moveToPrimaryDisplay } from './windows/avatarWindow'
 import { showPanelWindow } from './windows/panelWindow'
