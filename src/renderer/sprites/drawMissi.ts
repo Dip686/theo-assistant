@@ -164,14 +164,14 @@ export function drawTheoFront(opts: DrawOptions): void {
   // Gold watch on left wrist
   px(ctx, 24+ox, 37+u, NECKLACE, S); px(ctx, 24+ox, 38+u, NECKLACE, S)
 
-  // Black trousers
-  for (let y = 39; y <= 48; y++) for (let x = 27; x <= 36; x++) px(ctx, x+ox, y+u, JEANS, S)
-  for (let y = 42; y <= 48; y++) { px(ctx, 31+ox, y+u, JEANS_SHADOW, S); px(ctx, 32+ox, y+u, JEANS_SHADOW, S) }
-  for (let y = 39; y <= 48; y++) { px(ctx, 27+ox, y+u, JEANS_SHADOW, S); px(ctx, 36+ox, y+u, JEANS_SHADOW, S) }
+  // Black trousers (wider at bottom to meet shoes seamlessly)
+  for (let y = 39; y <= 49; y++) for (let x = 26; x <= 37; x++) px(ctx, x+ox, y+u, JEANS, S)
+  for (let y = 42; y <= 49; y++) { px(ctx, 31+ox, y+u, JEANS_SHADOW, S); px(ctx, 32+ox, y+u, JEANS_SHADOW, S) }
+  for (let y = 39; y <= 49; y++) { px(ctx, 26+ox, y+u, JEANS_SHADOW, S); px(ctx, 37+ox, y+u, JEANS_SHADOW, S) }
 
-  // Shoes
-  for (let x = 26; x <= 31; x++) { px(ctx, x+ox, 49+u, SHOE, S); px(ctx, x+ox, 50+u, SHOE_SHADOW, S) }
-  for (let x = 32; x <= 37; x++) { px(ctx, x+ox, 49+u, SHOE, S); px(ctx, x+ox, 50+u, SHOE_SHADOW, S) }
+  // Shoes (directly below trousers, no gap)
+  for (let x = 26; x <= 31; x++) { px(ctx, x+ox, 50+u, SHOE, S); px(ctx, x+ox, 51+u, SHOE_SHADOW, S) }
+  for (let x = 32; x <= 37; x++) { px(ctx, x+ox, 50+u, SHOE, S); px(ctx, x+ox, 51+u, SHOE_SHADOW, S) }
 
   addOutline(ctx, S)
 }
@@ -252,17 +252,17 @@ export function drawTheoWalk(opts: DrawOptions & { frame: number }): void {
     px(ctx, 38+f.rightArm, y+by, SKIN, S); px(ctx, 39+f.rightArm, y+by, SKIN, S)
   }
 
-  // Black trousers with legs
-  for (let y = 39; y <= 48; y++) {
-    for (let dx = 0; dx < 4; dx++) px(ctx, 27+f.leftLeg+dx, y, JEANS, S)
+  // Black trousers with legs (wider to meet shoes)
+  for (let y = 39; y <= 49; y++) {
+    for (let dx = -1; dx < 5; dx++) px(ctx, 27+f.leftLeg+dx, y, JEANS, S)
     px(ctx, 30+f.leftLeg, y, JEANS_SHADOW, S)
-    for (let dx = 0; dx < 4; dx++) px(ctx, 33+f.rightLeg+dx, y, JEANS, S)
+    for (let dx = -1; dx < 5; dx++) px(ctx, 33+f.rightLeg+dx, y, JEANS, S)
     px(ctx, 36+f.rightLeg, y, JEANS_SHADOW, S)
   }
 
   // Shoes
-  for (let x = 26; x <= 31; x++) { px(ctx, x+f.leftLeg, 49+U, SHOE, S); px(ctx, x+f.leftLeg, 50+U, SHOE_SHADOW, S) }
-  for (let x = 32; x <= 37; x++) { px(ctx, x+f.rightLeg, 49+U, SHOE, S); px(ctx, x+f.rightLeg, 50+U, SHOE_SHADOW, S) }
+  for (let x = 26; x <= 31; x++) { px(ctx, x+f.leftLeg, 50+U, SHOE, S); px(ctx, x+f.leftLeg, 51+U, SHOE_SHADOW, S) }
+  for (let x = 32; x <= 37; x++) { px(ctx, x+f.rightLeg, 50+U, SHOE, S); px(ctx, x+f.rightLeg, 51+U, SHOE_SHADOW, S) }
 
   addOutline(ctx, S)
 }
@@ -378,13 +378,13 @@ export function drawTheoWave(opts: DrawOptions): void {
   px(ctx, 43, 25+U, SKIN_HI, S); px(ctx, 44, 25+U, SKIN_HI, S)
   px(ctx, 45, 24+U, SKIN_HI, S)
 
-  // Black trousers
-  for (let y = 39; y <= 48; y++) for (let x = 27; x <= 36; x++) px(ctx, x, y+U, JEANS, S)
-  for (let y = 42; y <= 48; y++) { px(ctx, 31, y+U, JEANS_SHADOW, S); px(ctx, 32, y+U, JEANS_SHADOW, S) }
+  // Black trousers (wider to meet shoes)
+  for (let y = 39; y <= 49; y++) for (let x = 26; x <= 37; x++) px(ctx, x, y+U, JEANS, S)
+  for (let y = 42; y <= 49; y++) { px(ctx, 31, y+U, JEANS_SHADOW, S); px(ctx, 32, y+U, JEANS_SHADOW, S) }
 
   // Shoes
-  for (let x = 26; x <= 31; x++) { px(ctx, x, 49+U, SHOE, S); px(ctx, x, 50+U, SHOE_SHADOW, S) }
-  for (let x = 32; x <= 37; x++) { px(ctx, x, 49+U, SHOE, S); px(ctx, x, 50+U, SHOE_SHADOW, S) }
+  for (let x = 26; x <= 31; x++) { px(ctx, x, 50+U, SHOE, S); px(ctx, x, 51+U, SHOE_SHADOW, S) }
+  for (let x = 32; x <= 37; x++) { px(ctx, x, 50+U, SHOE, S); px(ctx, x, 51+U, SHOE_SHADOW, S) }
 
   addOutline(ctx, S)
 }
