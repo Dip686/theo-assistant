@@ -23,13 +23,17 @@ jobs:
       - name: Run tests
         run: npm test
 
+      - name: Generate credentials
+        run: node scripts/generate-credentials.js
+        env:
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+
       - name: Build & Package (macOS)
         run: npx electron-vite build && npx electron-builder --mac dmg zip
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NODE_OPTIONS: '--max-old-space-size=4096'
-          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
-          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
 
       - name: Upload macOS artifacts to release
         uses: softprops/action-gh-release@v2
@@ -50,13 +54,18 @@ jobs:
 
       - run: npm ci
 
+      - name: Generate credentials
+        run: node scripts/generate-credentials.js
+        shell: bash
+        env:
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+
       - name: Build app
         run: npx electron-vite build
         shell: bash
         env:
           NODE_OPTIONS: '--max-old-space-size=4096'
-          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
-          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
 
       - name: Package (Windows)
         run: npx electron-builder --win nsis zip
