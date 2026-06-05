@@ -16,43 +16,60 @@ describe('Avatar config', () => {
 })
 
 describe('Color palette switcher', () => {
-  it('exports all required color constants', async () => {
-    const colors = await import('../src/renderer/sprites/colors')
+  it('getActivePalette returns a valid palette', async () => {
+    const { getActivePalette } = await import('../src/renderer/sprites/colors')
+    const palette = getActivePalette()
 
     // Core skin colors
-    expect(colors.SKIN).toBeDefined()
-    expect(colors.SKIN_SHADOW).toBeDefined()
-    expect(colors.SKIN_HI).toBeDefined()
+    expect(palette.SKIN).toBeDefined()
+    expect(palette.SKIN_SHADOW).toBeDefined()
+    expect(palette.SKIN_HI).toBeDefined()
 
     // Hair
-    expect(colors.HAIR).toBeDefined()
-    expect(colors.HAIR_HI).toBeDefined()
-    expect(colors.HAIR_OUTLINE).toBeDefined()
+    expect(palette.HAIR).toBeDefined()
+    expect(palette.HAIR_HI).toBeDefined()
+    expect(palette.HAIR_OUTLINE).toBeDefined()
 
     // Eyes
-    expect(colors.EYE_WHITE).toBeDefined()
-    expect(colors.EYE_PUPIL).toBeDefined()
-    expect(colors.EYE_IRIS).toBeDefined()
+    expect(palette.EYE_WHITE).toBeDefined()
+    expect(palette.EYE_PUPIL).toBeDefined()
+    expect(palette.EYE_IRIS).toBeDefined()
 
     // Clothing
-    expect(colors.JEANS).toBeDefined()
-    expect(colors.SHOE).toBeDefined()
-    expect(colors.DRESS).toBeDefined()
+    expect(palette.SHOE).toBeDefined()
+    expect(palette.DRESS).toBeDefined()
 
     // Shirt presets
-    expect(colors.DEFAULT_SHIRT).toBeDefined()
-    expect(colors.SHIRT_PRESETS).toBeDefined()
-    expect(typeof colors.getShirtShadow).toBe('function')
+    expect(palette.DEFAULT_SHIRT).toBeDefined()
+    expect(palette.SHIRT_PRESETS).toBeDefined()
+    expect(typeof palette.getShirtShadow).toBe('function')
   })
 
-  it('colors are valid hex strings', async () => {
-    const colors = await import('../src/renderer/sprites/colors')
+  it('palette colors are valid hex strings', async () => {
+    const { getActivePalette } = await import('../src/renderer/sprites/colors')
+    const palette = getActivePalette()
     const hexPattern = /^#[0-9A-Fa-f]{6}$/
 
-    expect(colors.SKIN).toMatch(hexPattern)
-    expect(colors.HAIR).toMatch(hexPattern)
-    expect(colors.EYE_PUPIL).toMatch(hexPattern)
-    expect(colors.DEFAULT_SHIRT).toMatch(hexPattern)
+    expect(palette.SKIN).toMatch(hexPattern)
+    expect(palette.HAIR).toMatch(hexPattern)
+    expect(palette.EYE_PUPIL).toMatch(hexPattern)
+    expect(palette.DEFAULT_SHIRT).toMatch(hexPattern)
+  })
+
+  it('switching avatar changes the active palette', async () => {
+    const { setAvatar, getAvatar } = await import('../src/renderer/sprites/avatarConfig')
+    const { getActivePalette } = await import('../src/renderer/sprites/colors')
+
+    setAvatar('theo')
+    const theoPalette = getActivePalette()
+    expect(theoPalette.SKIN).toBe('#C68642')
+
+    setAvatar('missi')
+    const missiPalette = getActivePalette()
+    expect(missiPalette.SKIN).toBe('#EDC9AF')
+
+    // Reset
+    setAvatar('theo')
   })
 })
 

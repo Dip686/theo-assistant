@@ -61,15 +61,15 @@ export function createTray(callbacks: {
   onOpenPanel: () => void
   onQuickCapture: () => void
   onQuit: () => void
-}): Tray {
+}, avatarName: string = 'Theo'): Tray {
   const icon = createTrayIcon()
 
   tray = new Tray(icon)
-  tray.setToolTip('Theo — Desktop Assistant')
+  tray.setToolTip(`${avatarName} — Desktop Assistant`)
 
   const contextMenu = Menu.buildFromTemplate([
     {
-      label: 'Show Theo',
+      label: `Show ${avatarName}`,
       click: callbacks.onShowTheo,
     },
     {
@@ -83,7 +83,7 @@ export function createTray(callbacks: {
     },
     { type: 'separator' },
     {
-      label: 'Quit Theo',
+      label: `Quit ${avatarName}`,
       click: callbacks.onQuit,
     },
   ])

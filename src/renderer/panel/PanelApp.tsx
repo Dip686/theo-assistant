@@ -16,10 +16,20 @@ const TAB_LABELS: Record<Tab, string> = {
 
 export function PanelApp() {
   const [activeTab, setActiveTab] = useState<Tab>('tasks')
+  const [avatarName, setAvatarName] = useState('Theo')
 
   // Listen for tab-switch commands from main process (e.g., Cmd+Shift+N)
   useEffect(() => {
-    const theo = (window as unknown as { theo: { onOpenTab?: (cb: (tab: string) => void) => () => void } }).theo
+    const theo = (window as unknown as { theo: {
+      onOpenTab?: (cb: (tab: string) => void) => () => void
+      getSettings: () => Promise<{ avatar?: string }>
+    } }).theo
+
+    // Load avatar name
+    theo.getSettings().then((s) => {
+      setAvatarName(s.avatar === 'missi' ? 'Missi' : 'Theo')
+    })
+
     if (theo?.onOpenTab) {
       return theo.onOpenTab((tab) => {
         if (tab in TAB_LABELS) setActiveTab(tab as Tab)
@@ -30,7 +40,7 @@ export function PanelApp() {
   return (
     <div style={containerStyle}>
       <header style={headerStyle}>
-        <span style={logoStyle}>Theo</span>
+        <span style={logoStyle}>{avatarName}</span>
         <nav style={navStyle}>
           {(Object.keys(TAB_LABELS) as Tab[]).map((tab) => (
             <button
