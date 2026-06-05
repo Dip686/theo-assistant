@@ -16,6 +16,10 @@ app.whenReady().then(() => {
   // Initialize data store (seeds defaults on first launch)
   loadData()
 
+  // Determine active avatar name for UI
+  const settings = getSettings()
+  const avatarName = settings.avatar === 'missi' ? 'Missi' : 'Theo'
+
   // Create the transparent avatar overlay window
   const avatarWin = createAvatarWindow()
   setAvatarWindow(avatarWin)
@@ -46,7 +50,7 @@ app.whenReady().then(() => {
     onOpenPanel: () => showPanelWindow(),
     onQuickCapture: () => showPanelWindow('tasks'),
     onQuit: () => app.quit(),
-  })
+  }, avatarName)
 
   // Pipe renderer console to main process stdout for debugging
   avatarWin.webContents.on('console-message', (_event, _level, message) => {
@@ -102,7 +106,7 @@ app.whenReady().then(() => {
     startCalendarSync()
   }
 
-  console.log('Theo is running! 🧑')
+  console.log(`${avatarName} is running! ${avatarName === 'Missi' ? '👩' : '🧑'}`)
 })
 
 app.on('window-all-closed', () => {
