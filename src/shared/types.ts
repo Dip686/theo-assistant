@@ -99,6 +99,7 @@ export const IPC = {
   SETTINGS_GET: 'settings:get',
   SETTINGS_SAVE: 'settings:save',
   LOG_GET: 'log:get',
+  REMINDERS_NEXT_FIRE: 'reminders:next-fire',
 
   // Tasks
   TASKS_LIST: 'tasks:list',

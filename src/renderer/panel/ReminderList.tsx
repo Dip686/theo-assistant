@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react'
+import React, { useEffect, useState, useCallback, useRef } from 'react'
 import { ReminderForm } from './ReminderForm'
 import { theme, baseBtn } from './theme'
 
@@ -13,24 +13,60 @@ interface Reminder {
   createdAt: string
 }
 
+interface NextFire {
+  reminderId: string
+  nextFireAt: number
+}
+
 const theo = (window as unknown as { theo: {
   listReminders: () => Promise<Reminder[]>
   createReminder: (data: unknown) => Promise<Reminder>
   updateReminder: (data: unknown) => Promise<Reminder>
   deleteReminder: (id: string) => Promise<void>
+  getNextFireTimes: () => Promise<NextFire[]>
 } }).theo
+
+function formatCountdown(ms: number): string {
+  if (ms <= 0) return 'any moment...'
+  const totalSec = Math.floor(ms / 1000)
+  const min = Math.floor(totalSec / 60)
+  const sec = totalSec % 60
+  return `${min}:${sec.toString().padStart(2, '0')}`
+}
 
 export function ReminderList() {
   const [reminders, setReminders] = useState<Reminder[]>([])
   const [editing, setEditing] = useState<Reminder | null>(null)
   const [showForm, setShowForm] = useState(false)
+  const [nextFires, setNextFires] = useState<NextFire[]>([])
+  const [now, setNow] = useState(Date.now())
+  const tickRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   const load = useCallback(async () => {
     const list = await theo.listReminders()
     setReminders(list)
+    const fires = await theo.getNextFireTimes()
+    setNextFires(fires)
   }, [])
 
   useEffect(() => { load() }, [load])
+
+  // Tick every second to update countdowns
+  useEffect(() => {
+    tickRef.current = setInterval(() => {
+      setNow(Date.now())
+    }, 1000)
+    return () => { if (tickRef.current) clearInterval(tickRef.current) }
+  }, [])
+
+  // Refresh fire times every 30 seconds (in case engine restarted)
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      const fires = await theo.getNextFireTimes()
+      setNextFires(fires)
+    }, 30000)
+    return () => clearInterval(interval)
+  }, [])
 
   const toggleEnabled = async (r: Reminder) => {
     await theo.updateReminder({ ...r, enabled: !r.enabled })
@@ -61,6 +97,13 @@ export function ReminderList() {
     return m ? `Every ${h}h ${m}m` : `Every ${h}h`
   }
 
+  const getCountdown = (reminderId: string): string | null => {
+    const fire = nextFires.find((f) => f.reminderId === reminderId)
+    if (!fire) return null
+    const remaining = fire.nextFireAt - now
+    return formatCountdown(remaining)
+  }
+
   return (
     <div>
       <div style={headerRowStyle}>
@@ -82,57 +125,74 @@ export function ReminderList() {
       )}
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 10 }}>
-        {reminders.map((r) => (
-          <div key={r.id} style={cardStyle}>
-            {/* Row 1: Name + badge + toggle */}
-            <div style={cardRowStyle}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, minWidth: 0 }}>
-                <span style={{ fontWeight: 600, fontSize: 13 }}>{r.name}</span>
-                <span style={badgeStyle}>
-                  {r.type === 'interval' ? formatInterval(r.intervalMinutes) : r.scheduledTime}
-                </span>
-              </div>
-              <label style={toggleContainerStyle}>
-                <input
-                  type="checkbox"
-                  checked={r.enabled}
-                  onChange={() => toggleEnabled(r)}
-                  style={{ display: 'none' }}
-                />
-                <div style={{
-                  ...toggleTrackStyle,
-                  background: r.enabled ? theme.primary : theme.border,
-                }}>
-                  <div style={{
-                    ...toggleThumbStyle,
-                    transform: r.enabled ? 'translateX(14px)' : 'translateX(0)',
-                  }} />
+        {reminders.map((r) => {
+          const countdown = r.enabled ? getCountdown(r.id) : null
+
+          return (
+            <div key={r.id} style={cardStyle}>
+              {/* Row 1: Name + badge + toggle */}
+              <div style={cardRowStyle}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, minWidth: 0 }}>
+                  <span style={{ fontWeight: 600, fontSize: 13 }}>{r.name}</span>
+                  <span style={badgeStyle}>
+                    {r.type === 'interval' ? formatInterval(r.intervalMinutes) : r.scheduledTime}
+                  </span>
                 </div>
-              </label>
-            </div>
+                <label style={toggleContainerStyle}>
+                  <input
+                    type="checkbox"
+                    checked={r.enabled}
+                    onChange={() => toggleEnabled(r)}
+                    style={{ display: 'none' }}
+                  />
+                  <div style={{
+                    ...toggleTrackStyle,
+                    background: r.enabled ? theme.primary : theme.border,
+                  }}>
+                    <div style={{
+                      ...toggleThumbStyle,
+                      transform: r.enabled ? 'translateX(14px)' : 'translateX(0)',
+                    }} />
+                  </div>
+                </label>
+              </div>
 
-            {/* Row 2: Message */}
-            <div style={{ color: theme.textMuted, fontSize: 11 }}>
-              {r.message}
-            </div>
+              {/* Row 2: Message */}
+              <div style={{ color: theme.textMuted, fontSize: 11 }}>
+                {r.message}
+              </div>
 
-            {/* Row 3: Actions */}
-            <div style={{ display: 'flex', gap: 8, marginTop: 2 }}>
-              <button
-                style={actionBtnStyle}
-                onClick={() => { setEditing(r); setShowForm(false) }}
-              >
-                Edit
-              </button>
-              <button
-                style={{ ...actionBtnStyle, color: theme.danger }}
-                onClick={() => handleDelete(r.id)}
-              >
-                Delete
-              </button>
+              {/* Row 3: Countdown + Actions */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 2 }}>
+                {countdown ? (
+                  <div style={countdownStyle}>
+                    <span style={countdownIcon}>⏱</span>
+                    <span>{countdown}</span>
+                  </div>
+                ) : (
+                  <div style={{ fontSize: 10, color: theme.textDim }}>
+                    {r.enabled ? '' : 'Paused'}
+                  </div>
+                )}
+
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button
+                    style={actionBtnStyle}
+                    onClick={() => { setEditing(r); setShowForm(false) }}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    style={{ ...actionBtnStyle, color: theme.danger }}
+                    onClick={() => handleDelete(r.id)}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
             </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
 
       {reminders.length === 0 && (
@@ -174,6 +234,20 @@ const badgeStyle: React.CSSProperties = {
   padding: '2px 6px',
   borderRadius: 3,
   whiteSpace: 'nowrap',
+}
+
+const countdownStyle: React.CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: 4,
+  fontSize: 12,
+  fontFamily: "'Press Start 2P', monospace, system-ui",
+  color: theme.primary,
+  letterSpacing: 0.5,
+}
+
+const countdownIcon: React.CSSProperties = {
+  fontSize: 10,
 }
 
 const actionBtnStyle: React.CSSProperties = {
