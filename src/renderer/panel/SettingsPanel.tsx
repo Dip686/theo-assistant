@@ -267,7 +267,7 @@ export function SettingsPanel() {
             </div>
             {settings.calendar.enabled && (
               <div style={{ fontSize: 10, color: theme.textDim, marginTop: 4, marginBottom: 8 }}>
-                Theo will remind you 10min and 1min before meetings.
+                Theo will remind you 15min and 1min before meetings.
                 Other reminders are suppressed during meetings.
               </div>
             )}
@@ -319,6 +319,23 @@ export function SettingsPanel() {
               <div style={{ fontSize: 11, color: theme.textDim, marginBottom: 8, fontStyle: 'italic' }}>
                 No meetings today
               </div>
+            )}
+
+            {settings.calendar.enabled && (
+              <button
+                onClick={async () => {
+                  const events = await theo.getCalendarEventsToday()
+                  setTodayEvents(events)
+                  console.log('Calendar sync:', events.length, 'events')
+                }}
+                style={{
+                  ...baseBtn, marginBottom: 8,
+                  background: theme.surface, color: theme.textMuted,
+                  fontSize: 10, padding: '4px 10px',
+                }}
+              >
+                Sync now
+              </button>
             )}
 
             <button

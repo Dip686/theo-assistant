@@ -1,16 +1,18 @@
 {
   "name": "theo",
-  "version": "3.2.0",
+  "version": "3.3.0",
   "description": "Desktop avatar assistant that reminds you to take breaks",
   "author": "Dip686",
   "main": "./out/main/index.js",
   "scripts": {
+    "prebuild": "node scripts/generate-credentials.js",
+    "predev": "node scripts/generate-credentials.js",
     "dev": "electron-vite dev",
     "build": "electron-vite build",
     "preview": "electron-vite preview",
-    "package": "electron-vite build && electron-builder --mac",
-    "package:dmg": "electron-vite build && electron-builder --mac dmg",
-    "package:zip": "electron-vite build && electron-builder --mac zip",
+    "package": "npm run prebuild && electron-vite build && electron-builder --mac",
+    "package:dmg": "npm run prebuild && electron-vite build && electron-builder --mac dmg",
+    "package:zip": "npm run prebuild && electron-vite build && electron-builder --mac zip",
     "test": "vitest run",
     "test:watch": "vitest"
   },

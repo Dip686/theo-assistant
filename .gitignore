@@ -5,9 +5,11 @@ dist/
 *.log
 release/
 scripts/
+!scripts/generate-credentials.js
 build/*
 !build/icon.png
 !build/icon.icns
 !build/icon.ico
 coverage/
 .claude/.env
+src/main/calendar/_credentials.ts
