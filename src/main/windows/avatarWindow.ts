@@ -17,10 +17,12 @@ export function computeWindowPosition(
   workArea: { x: number; y: number; width: number; height: number }
 ): { x: number; y: number } {
   if (platform === 'win32') {
-    // Windows: use workArea to stay above the taskbar
+    // Windows: use workArea to stay above the taskbar.
+    // Offset by 1px to prevent Windows from detecting the window as
+    // "maximized" (which causes opaque background rendering).
     return {
-      x: workArea.x + workArea.width - WIN_WIDTH,
-      y: workArea.y + workArea.height - WIN_HEIGHT,
+      x: workArea.x + workArea.width - WIN_WIDTH + 1,
+      y: workArea.y + workArea.height - WIN_HEIGHT + 1,
     }
   }
   // macOS / Linux: use full display size so window covers full-screen apps
@@ -53,7 +55,7 @@ export function createAvatarWindow(): BrowserWindow {
     resizable: false,
     focusable: false,
     show: true,
-    backgroundColor: '#00000000',
+    backgroundColor: '#00ffffff',  // Transparent white — #00000000 causes white flash on Windows
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       contextIsolation: true,
@@ -77,7 +79,7 @@ export function createAvatarWindow(): BrowserWindow {
 
   // Re-apply transparent background after page loads — fixes Windows rendering artifact
   avatarWindow.webContents.on('did-finish-load', () => {
-    avatarWindow?.setBackgroundColor('#00000000')
+    avatarWindow?.setBackgroundColor('#00ffffff')
   })
 
   avatarWindow.on('closed', () => {
