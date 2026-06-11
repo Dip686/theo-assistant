@@ -26,6 +26,7 @@ contextBridge.exposeInMainWorld('theo', {
 
   // Reminder CRUD (invoke/handle)
   listReminders: () => ipcRenderer.invoke(IPC.REMINDERS_LIST),
+  getNextFireTimes: () => ipcRenderer.invoke(IPC.REMINDERS_NEXT_FIRE),
   createReminder: (data: unknown) => ipcRenderer.invoke(IPC.REMINDERS_CREATE, data),
   updateReminder: (data: unknown) => ipcRenderer.invoke(IPC.REMINDERS_UPDATE, data),
   deleteReminder: (id: string) => ipcRenderer.invoke(IPC.REMINDERS_DELETE, id),

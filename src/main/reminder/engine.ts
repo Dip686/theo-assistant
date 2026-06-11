@@ -24,6 +24,22 @@ export function getCurrentReminder(): Reminder | null {
   return currentReminder
 }
 
+/**
+ * Get next fire times for all active interval reminders.
+ * Returns { reminderId, nextFireAt (epoch ms) } for each.
+ */
+export function getNextFireTimes(): { reminderId: string; nextFireAt: number }[] {
+  const reminders = getReminders()
+  return timers.map((t) => {
+    const reminder = reminders.find((r) => r.id === t.reminderId)
+    const intervalMs = (reminder?.intervalMinutes || 0) * 60 * 1000
+    return {
+      reminderId: t.reminderId,
+      nextFireAt: t.lastFiredAt + intervalMs,
+    }
+  })
+}
+
 function isQuietHoursActive(): boolean {
   const settings = getSettings()
   if (!settings.quietHours.enabled) return false

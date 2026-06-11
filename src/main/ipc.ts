@@ -16,7 +16,7 @@ import {
   deleteTask,
   addTaskNote,
 } from './reminder/store'
-import { snoozeReminder, dismissReminder, restartEngine } from './reminder/engine'
+import { snoozeReminder, dismissReminder, restartEngine, getNextFireTimes } from './reminder/engine'
 
 export function registerIpcHandlers(callbacks: {
   onSetInteractive: (interactive: boolean) => void
@@ -24,6 +24,7 @@ export function registerIpcHandlers(callbacks: {
 }): void {
   // Reminder CRUD
   ipcMain.handle(IPC.REMINDERS_LIST, () => getReminders())
+  ipcMain.handle(IPC.REMINDERS_NEXT_FIRE, () => getNextFireTimes())
 
   ipcMain.handle(IPC.REMINDERS_CREATE, (_event, data: Omit<Reminder, 'id' | 'createdAt'>) => {
     const reminder = createReminder(data)
