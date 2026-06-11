@@ -62,34 +62,6 @@ app.whenReady().then(() => {
     avatarWin.webContents.openDevTools({ mode: 'detach' })
   }
 
-  // Dev shortcut: Cmd+Shift+T triggers test reminder
-  const registered = globalShortcut.register('CommandOrControl+Shift+T', () => {
-    console.log('Theo: Test shortcut triggered!')
-    moveToActiveDisplay()
-    const win = getAvatarWindow()
-    if (win && !win.isDestroyed()) {
-      win.webContents.send(IPC.REMINDER_FIRE, {
-        id: 'test',
-        name: 'Test',
-        message: 'Wink wink! Please look away from the screen for 20 seconds. 👀',
-        type: 'interval',
-        enabled: true,
-        gentleMode: false,
-      })
-      console.log('Theo: Sent reminder:fire to renderer')
-    } else {
-      console.log('Theo: Avatar window not found or destroyed!')
-    }
-  })
-  console.log(`Theo: Cmd+Shift+T registered: ${registered}`)
-
-  // Quick Capture shortcut: Cmd+Shift+N opens panel on Tasks tab
-  const captureRegistered = globalShortcut.register('CommandOrControl+Shift+N', () => {
-    console.log('Theo: Quick Capture shortcut triggered!')
-    showPanelWindow('tasks')
-  })
-  console.log(`Theo: Cmd+Shift+N registered: ${captureRegistered}`)
-
   // Multi-monitor: move to primary display if a monitor is disconnected
   screen.on('display-removed', () => {
     console.log('Theo: Display removed, moving to primary')

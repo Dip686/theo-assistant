@@ -74,7 +74,6 @@ export function createTray(callbacks: {
     },
     {
       label: 'Quick Capture',
-      accelerator: 'CommandOrControl+Shift+N',
       click: callbacks.onQuickCapture,
     },
     {
