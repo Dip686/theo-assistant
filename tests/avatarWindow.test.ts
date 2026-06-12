@@ -55,37 +55,36 @@ describe('computeWindowPosition', () => {
   })
 
   describe('Windows — uses workArea (avoids taskbar)', () => {
-    it('positions above bottom taskbar on 1080p', () => {
+    it('positions above bottom taskbar on 1080p with 1px offset', () => {
       const pos = computeWindowPosition('win32', WIN_1080P.size, WIN_1080P.workArea)
 
-      // Bottom of window should be at workArea bottom (1040), NOT full screen bottom (1080)
-      expect(pos.x).toBe(1920 - WIN_WIDTH)       // 1320
-      expect(pos.y).toBe(1040 - WIN_HEIGHT)       // 540
-      expect(pos.y + WIN_HEIGHT).toBe(1040)        // window bottom = taskbar top
+      // 1px offset prevents Windows from detecting as "maximized"
+      expect(pos.x).toBe(1920 - WIN_WIDTH + 1)       // 1321
+      expect(pos.y).toBe(1040 - WIN_HEIGHT + 1)       // 541
     })
 
     it('positions above bottom taskbar on 1440p', () => {
       const pos = computeWindowPosition('win32', WIN_1440P.size, WIN_1440P.workArea)
 
-      expect(pos.y + WIN_HEIGHT).toBe(1400) // above 40px taskbar
+      expect(pos.y + WIN_HEIGHT).toBe(1401) // above taskbar with 1px offset
     })
 
     it('does NOT place window behind taskbar', () => {
       const pos = computeWindowPosition('win32', WIN_1080P.size, WIN_1080P.workArea)
 
-      // Window bottom must not exceed workArea bottom
+      // Window bottom must not exceed workArea bottom (+ 1px offset is ok)
       const windowBottom = pos.y + WIN_HEIGHT
       const workAreaBottom = WIN_1080P.workArea.y + WIN_1080P.workArea.height
-      expect(windowBottom).toBeLessThanOrEqual(workAreaBottom)
+      expect(windowBottom).toBeLessThanOrEqual(workAreaBottom + 1)
     })
 
     it('handles taskbar on left side', () => {
       const pos = computeWindowPosition('win32', WIN_TASKBAR_LEFT.size, WIN_TASKBAR_LEFT.workArea)
 
-      // x should account for the left taskbar offset
-      expect(pos.x).toBe(60 + 1860 - WIN_WIDTH)  // 1320
-      // y should use full workArea height since taskbar is on the side
-      expect(pos.y).toBe(1080 - WIN_HEIGHT)
+      // x should account for the left taskbar offset + 1px
+      expect(pos.x).toBe(60 + 1860 - WIN_WIDTH + 1)  // 1321
+      // y should use full workArea height + 1px offset
+      expect(pos.y).toBe(1080 - WIN_HEIGHT + 1)
     })
   })
 
@@ -134,18 +133,18 @@ describe('Multi-monitor positioning', () => {
     const pos = computeWindowPosition('win32', SECONDARY_LEFT_WIN.size, SECONDARY_LEFT_WIN.workArea)
 
     // workArea.x is -1920, so window should be at -1920 + 1920 - 600 = -600
-    expect(pos.x).toBe(-1920 + 1920 - WIN_WIDTH)  // -600
-    expect(pos.y).toBe(1040 - WIN_HEIGHT)          // 540
-    // Window bottom stays above taskbar
-    expect(pos.y + WIN_HEIGHT).toBe(1040)
+    expect(pos.x).toBe(-1920 + 1920 - WIN_WIDTH + 1)  // -599
+    expect(pos.y).toBe(1040 - WIN_HEIGHT + 1)          // 541
+    // Window bottom stays above taskbar (with 1px offset)
+    expect(pos.y + WIN_HEIGHT).toBe(1041)
   })
 
   it('Windows: positions correctly on a monitor above', () => {
     const pos = computeWindowPosition('win32', SECONDARY_ABOVE.size, SECONDARY_ABOVE.workArea)
 
     // workArea.y is -1440
-    expect(pos.y).toBe(-1440 + 1440 - WIN_HEIGHT)  // -500
-    expect(pos.y + WIN_HEIGHT).toBe(0)  // bottom edge at y=0 (top of primary)
+    expect(pos.y).toBe(-1440 + 1440 - WIN_HEIGHT + 1)  // -499
+    expect(pos.y + WIN_HEIGHT).toBe(1)  // bottom edge near y=0 (with 1px offset)
   })
 })
 

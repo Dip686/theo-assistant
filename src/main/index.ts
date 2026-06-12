@@ -9,6 +9,13 @@ import { setCalendarAvatarWindow, startCalendarSync, stopCalendarSync } from './
 import { isConnected } from './calendar/googleAuth'
 import { IPC } from '../shared/types'
 
+// Windows: disable hardware acceleration to prevent DWM from rendering
+// a non-client area (white bar) on transparent frameless windows.
+// Must be called before app.ready. No effect on macOS.
+if (process.platform === 'win32') {
+  app.disableHardwareAcceleration()
+}
+
 // Hide dock icon — Theo lives in the tray
 app.dock?.hide()
 
